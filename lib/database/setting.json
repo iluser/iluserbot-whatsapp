@@ -1,0 +1,16 @@
+{
+  "limitCount": "15",
+  "gruplimitCount": "4",
+  "memberLimit": " 150",
+  "groupLimit": "50",
+  "barbarkey": "Marselhasagi",
+  "vhtearkey": "chika-iluser-not",
+  "melodickey": "administrator",
+  "prefix": ".",
+  "tobzkey": "BotWeA",
+  "mtc": false,
+  "restartState": false,
+  "restartId": "undefined",
+  "banChats": false,
+  "Rest": true
+}
