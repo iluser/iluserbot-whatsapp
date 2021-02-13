@@ -1,0 +1,113 @@
+{
+  "name": "iluser",
+  "version": "3.0.0",
+  "description": "KNTL",
+  "main": "index.js",
+  "scripts": {
+    "start": "node index.js",
+    "preinstall": "set PUPPETEER_SKIP_CHROMIUM_DOWNLOAD=true",
+    "postinstall": "node fixWAPI.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "TOBZ",
+  "license": "Apache-2.0",
+  "peerDependencies": {
+    "sharp": "^0.27.1"
+  },
+  "engines": {
+    "node": ">=12.18.3"
+  },
+  "dependencies": {
+    "@ffmpeg-installer/ffmpeg": "^1.0.20",
+    "@justalk/pornhub-api": "^3.4.0",
+    "@open-wa/wa-automate": "^3.4.1",
+    "@open-wa/wa-decrypt": "^3.0.1",
+    "@vitalets/google-translate-api": "^5.0.0",
+    "audit": "0.0.6",
+    "await-exec": "^0.1.2",
+    "axios": "^0.21.1",
+    "bent": "^7.3.10",
+    "brainly-scraper": "^1.0.2",
+    "canvacord": "^5.0.8",
+    "canvas": "^2.6.1",
+    "dotenv": "^8.2.0",
+    "download-file": "^0.1.5",
+    "emoji-regex": "^9.0.0",
+    "emoji-unicode": "^2.0.1",
+    "figlet": "^1.5.0",
+    "file-type": "^15.0.1",
+    "fix": "^0.0.3",
+    "fluent-ffmpeg": "^2.1.2",
+    "fs-extra": "^9.1.0",
+    "g-i-s": "^2.1.6",
+    "get-youtube-id": "^1.0.1",
+    "gif-frames": "^1.0.1",
+    "google-it": "^1.6.1",
+    "google-translate-open-api": "^1.3.5",
+    "got": "^11.7.0",
+    "gtts": "^0.1.1",
+    "html2plaintext": "^2.1.2",
+    "human-readable": "^0.2.1",
+    "image-size": "^0.9.1",
+    "image-to-base64": "^2.1.1",
+    "image-to-pdf": "^1.0.0",
+    "is-porn": "^0.9.0",
+    "jimp": "^0.16.1",
+    "lolcatjs": "^2.4.0",
+    "mathjs": "^8.1.1",
+    "moment-timezone": "^0.5.31",
+    "mysql": "^2.18.1",
+    "nana-api": "^1.1.2",
+    "needle": "^2.6.0",
+    "nhentai-api": "^3.0.2",
+    "nhentai-js": "^4.0.0",
+    "node-cron": "^2.0.3",
+    "node-fetch": "^2.6.1",
+    "node-gtts": "^2.0.2",
+    "node-run-cmd": "^1.0.1",
+    "node-wav": "0.0.2",
+    "parse-ms": "^2.1.0",
+    "performance-now": "^2.1.0",
+    "pm2": "^4.5.0",
+    "promise": "^8.1.0",
+    "remove.bg": "^1.3.0",
+    "request": "^2.88.2",
+    "sastrawijs": "^1.0.3",
+    "sharp": "^0.27.1",
+    "tesseract.js": "^2.1.1",
+    "text2png": "^2.3.0",
+    "tiktok-scraper": "^1.4.12",
+    "translatte": "^2.5.8",
+    "video-crop": "^1.1.0",
+    "video-crop-cli": "^1.1.0",
+    "video-url-link": "^0.1.4",
+    "web-audio-api": "^0.2.2",
+    "webp-converter": "^2.3.1",
+    "ytdl": "^1.3.5",
+    "ytdl-core": "^4.4.5"
+  },
+  "directories": {
+    "lib": "lib"
+  },
+  "devDependencies": {
+    "@types/puppeteer": "^5.4.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/TobyG74/ElainaBOT",
+    "babel-eslint": "^10.1.0",
+    "eslint": "^7.9.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1"
+  },
+  "keywords": [
+    "Whatsapp-Bot"
+  ],
+  "bugs": {
+    "url": "https://github.com/TobyG74/ElainaBOT/issues"
+  },
+  "homepage": "https://github.com/TobyG74/ElainaBOT"
+}
