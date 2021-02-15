@@ -13,6 +13,11 @@ const get = require('got')
 const ms = require('parse-ms')
 const toMs = require('ms')
 const isPorn = require('is-porn')
+const apiNSF = ['c3257b42f47544d08b8609974227ac1f','e281f93d62384681af55a66d967c0883','dc0cac2b46564d5ebbf6bda7eabcc7f2']
+const apiNSFW = apiNSF[Math.floor(Math.random() * apiNSF.length)]
+const NSFAI = require('nsfai')
+const noPorn = new NSFAI(apiNSFW)
+const appC = new Clarifai.App({ apiKey: apiNSFW })
 const speed = require('performance-now')
 const fetch = require('node-fetch')
 const cheerio = require("cheerio");
@@ -46,6 +51,8 @@ const exec = require('await-exec')
 const webp = require('webp-converter')
 const Exif = require('./utils/exif')
 const exif = new Exif()
+const Takestick = require('./utils/takestick')
+const takestick = new Takestick()
 const cekResi = require('./lib/cekResi')
 const images = require('./lib/images')
 const rugAapi = require('./lib/rugaApi')
@@ -351,8 +358,8 @@ module.exports = iluser = async (iluser, message) => {
         let { body } = message
         //const dari = sender && sender.isMe ? to : from //biar selfbot ceunah
         const { name, formattedTitle } = chat
-        let { pushname, verifiedName } = sender
-        pushname = pushname || verifiedName
+        let { pushname, verifiedName, formattedName } = sender
+        pushname = pushname || verifiedName || formattedName
         const commands = caption || body || ''
         const chats = (type === 'chat') ? body : (type === 'image' || type === 'video') ? caption : ''
         const argx = commands.toLowerCase()
@@ -443,6 +450,7 @@ module.exports = iluser = async (iluser, message) => {
                     //console.log('Tidak valid')
                 }
             }
+        }
 
         if (isGroupMsg && isBotGroupAdmins && !isGroupAdmins && !isOwner){
             if (chats.length > 15000){
@@ -452,25 +460,100 @@ module.exports = iluser = async (iluser, message) => {
             }
         }
 
-        if (isGroupMsg && isBotGroupAdmins && !isGroupAdmins && !isOwner){
-            if (chats.match(/\bhttps?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi)) {
-                const chatpn = chats.match(/\bhttps?:\/\/(www\.)?[-a-zA-Z0-9@:%._\+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_\+.~#?&//=]*)/gi)
-                const flnrl = new URL(chatpn)
-              //  console.log('Sedang memeriksa tautan...\n' + flnrl)
-                //await iluser.reply(message.from, `*LINK PORN DETECTOR*\n\nSedang memeriksa tautan...`, id)
-                isPorn(flnrl.hostname, function(error, status) {
-                    if (status == true) {
+        if (isGroupMsg && !isGroupAdmins && isBotGroupAdmins && !isOwner) {
+            const isUrl = (url) => {
+    return url.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi))
+}
+            if (isUrl(chats)) {
+                const classify = new URL(isUrl(chats))
+                console.log(color('[FILTER]', 'yellow'), 'Checking link...', classify.hostname)
+                isPorn(classify.hostname, async (err, status) => {
+                    if (err) return console.error(err)
+                    if (status) {
+                        console.log(color('[FILTER]', 'red'), color('The link is classified as NSFW!', 'yellow'))
                         iluser.reply(message.from, `Link mengandung unsur pornografi!\nSekarang di wisuda dalam 3 detik!`, id)
                         sleep(3000)
                         iluser.removeParticipant(groupId, sender.id)
-                       // console.log('Mengandung unsur pornografi ' + sender.id)
                     } else {
-                    //iluser.reply(message.from, `Link tersebut tidak mengandung unsur pornografi`, message.id)
-                  //  console.log('Tidak di kick')
-                }
+                        console.log(('[NEUTRAL]'), color('The link is safe!'))
+                    }
                 })
-            }}
+            }
         }
+         //ANTI PORN
+        if (isGroupMsg && !isGroupAdmins && isBotGroupAdmins && !isOwner) {
+            const isUrl = (url) => {
+    return url.match(new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi))
+}
+            if (isUrl(chats)) {
+                const classify = new URL(isUrl(chats))
+                console.log(color('[FILTER]', 'yellow'), 'Checking link...', classify.hostname)
+                isPorn(classify.hostname, async (err, status) => {
+                    if (err) return console.error(err)
+                    if (status) {
+                        console.log(color('[FILTER]', 'red'), color('The link is classified as NSFW!', 'yellow'))
+                        iluser.reply(message.from, `Link mengandung unsur pornografi!\nSekarang di wisuda dalam 3 detik!`, id)
+                        sleep(3000)
+                        iluser.removeParticipant(groupId, sender.id)
+                    } else {
+                        console.log(('[NEUTRAL]'), color('The link is safe!'))
+                    }
+                })
+            }
+        }
+    
+        
+        if (isGroupMsg && !isOwner && !isGroupAdmins && isBotGroupAdmins) {
+            if (type === 'image') {
+                const dataMediaa = await decryptMedia(message)
+                const mediaType = `${dataMediaa.toString('base64')}`
+                noPorn.predict(mediaType)
+                .then(async(res) => {
+                const { confidence } = res
+                const nilaipersen = ((confidence / 1.000000) * 100).toFixed(1) + '%'
+                    if (!res.sfw) {
+                    iluser.reply(from, `*PORN DETECTOR*\n\nGambar ini mengandung unsur pornografi!\n*Keyakinan: ${nilaipersen}/100%*!\n\nTarget akan di kick dalam 3 detik!`, id)
+                    .then(() => {
+                        sleep(3000)
+                        iluser.removeParticipant(groupId, sender.id)
+                        console.log(color('[FILTER]', 'red'), color(`${sender.id} telah di-kick karena mengirimkan foto 18+`, 'green'))
+                    })
+                }
+            })
+          } else if (type === 'video') {
+                const dataMediaa = await decryptMedia(message)
+                const inPorn = './temp/video/DetectingPorn.mp4'
+                const outPorn = './temp/video/outPorn.png'
+                fs.writeFile(inPorn, dataMediaa, err => {
+                    if (err) return console.log(err)
+                        exec(`ffmpeg -ss 1 -i ${inPorn} -vframes 1 -filter:v 'yadif',scale=1280:720' ${outPorn}`, async function() {
+                        fs.readFile(outPorn, { encoding: 'base64' }, async (err, base64) => {
+                    if (err) return console.log(err)
+                        noPorn.predict(base64)
+                        .then(async(res) => {
+                            const { confidence } = res
+                            const nilaipersen = ((confidence / 1.000000) * 100).toFixed(1) + '%'
+                            console.log(res)
+                     if (!res.sfw) {
+                            iluser.reply(from, `*PORN DETECTOR*\n\nVideo ini mengandung unsur pornografi!\n*Keyakinan: ${nilaipersen}/100%*!\n\nTarget akan di kick dalam 3 detik!`, id)
+                            .then(() => {
+                            sleep(3000)
+                            iluser.removeParticipant(groupId, sender.id)
+                            console.log(color('[FILTER]', 'red'), color(`${sender.id} telah di-kick karena mengirimkan video 18+`, 'green'))
+                            fs.unlinkSync(inPorn)
+                            fs.unlinkSync(outPorn)
+                            })
+                        } else if (res.sfw) {
+                            fs.unlinkSync(inPorn)
+                            fs.unlinkSync(outPorn)
+                           }
+                        })
+                    })
+                })
+            })
+        }
+    }
+        
 
                 // AFK
         if (isGroupMsg) {
@@ -969,7 +1052,7 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
                 }
 ;
         //AUTO VIEW
-       // iluser.sendSeen(chatId)
+       iluser.sendSeen(chatId)
 
       /*  // [BETA] Avoid Spam Message
         if (isCmd && isFiltered(from) && !isGroupMsg && !isOwner) {
@@ -1542,6 +1625,382 @@ GIFT KUOTA LIMIT*
       return iluser.reply(message.from, `Sama-sama *${undefined, pushname}* ☺`, message.id);
       break
 
+        case prefix+'threats':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediatt = isQuotedImage ? quotedMsg : message
+                const dataPotott = await decryptMedia(encryptMediatt, uaOverride)
+                const fotottNya = await uploadImages(dataPotott, `fotoProfiltt.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=threats&url=${fotottNya}&raw=1`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | threats'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'glass':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediagl = isQuotedImage ? quotedMsg : message
+                const dataPotogl = await decryptMedia(encryptMediagl, uaOverride)
+                const fotoglNya = await uploadImages(dataPotogl, `fotoProfilgl.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/glass?avatar=${fotoglNya}`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | glass'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'greyscale':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediags = isQuotedImage ? quotedMsg : message
+                const dataPotogs = await decryptMedia(encryptMediags, uaOverride)
+                const fotogsNya = await uploadImages(dataPotogs, `fotoProfilgs ${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/greyscale?avatar=${fotogsNya}`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | greyscale'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'invert':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediaiv = isQuotedImage ? quotedMsg : message
+                const dataPotoiv = await decryptMedia(encryptMediaiv, uaOverride)
+                const fotoivNya = await uploadImages(dataPotoiv, `fotoProfiliv.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/invert?avatar=${fotoivNya}`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | invert'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'invertgrey':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediaig = isQuotedImage ? quotedMsg : message
+                const dataPotoig = await decryptMedia(encryptMediaig, uaOverride)
+                const fotoigNya = await uploadImages(dataPotoig, `fotoProfilig.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/invertgreyscale?avatar=${fotoigNya}`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | invertgrey'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'brightness':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediabn = isQuotedImage ? quotedMsg : message
+                const dataPotobn = await decryptMedia(encryptMediabn, uaOverride)
+                const fotobnNya = await uploadImages(dataPotobn, `fotoProfilbn.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/brightness?avatar=${fotobnNya}`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | brightness'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'threshold':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediath = isQuotedImage ? quotedMsg : message
+                const dataPototh = await decryptMedia(encryptMediath, uaOverride)
+                const fotothNya = await uploadImages(dataPototh, `fotoProfilth.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/threshold?avatar=${fotothNya}`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | threshold'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'sepia':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediasa = isQuotedImage ? quotedMsg : message
+                const dataPotosa = await decryptMedia(encryptMediasa, uaOverride)
+                const fotosaNya = await uploadImages(dataPotosa, `fotoProfilsa.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/sepia?avatar=${fotosaNya}`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | sepia'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'buriq':
+        case prefix+'burik':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediabq = isQuotedImage ? quotedMsg : message
+                const dataPotobq = await decryptMedia(encryptMediabq, uaOverride)
+                const fotobqNya = await uploadImages(dataPotobq, `fotoProfilbq.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=jpeg&url=${fotobqNya}&raw=1`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | buriq'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'blurfry':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediabf = isQuotedImage ? quotedMsg : message
+                const dataPotobf = await decryptMedia(encryptMediabf, uaOverride)
+                const fotobfNya = await uploadImages(dataPotobf, `fotoProfilbf.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=blurpify&image=${fotobfNya}&raw=1`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | blurfry'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'magik':
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediamk = isQuotedImage ? quotedMsg : message
+                const dataPotomk = await decryptMedia(encryptMediamk, uaOverride)
+                const fotomkNya = await uploadImages(dataPotomk, `fotoProfilmk.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=magik&image=${fotomkNya}&raw=1&intensity=5`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | magik image'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+            break
+        case prefix+'captcha':{
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                
+                await limitAdd(serial)
+                const q = body.slice(9)
+                if (args.length == 1) return await iluser.reply(from, 'Format Salah!', id)
+                if (isMedia && type === 'image' || isQuotedImage) {
+                const encryptMediacc = isQuotedImage ? quotedMsg : message
+                const dataPotocc = await decryptMedia(encryptMediacc, uaOverride)
+                const potoccNya = await uploadImages(dataPotocc, `fotoProfilcc.${sender.id}`)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=captcha&url=${potoccNya}&username=${q}&raw=1`, 'iluserBOT.jpg', `${mess.iklann}`, id)
+                .then(() => console.log('SUCCESS | captcha image!'))
+                .catch(async (err) => {
+                    console.error(err)
+                    await iluser.reply(from, 'Error!', id)
+                })
+            } else {
+                await iluser.reply(from, 'Format Salah!', id)
+            }
+        }
+            break
+        case prefix+'sarah':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(7)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                await iluser.sendFileFromUrl(from, `https://rest.farzain.com/api/special/fansign/indo/viloid.php?apikey=ppqeuy&text=${q}`, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | sarah image!'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'cosplay':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(9)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                await iluser.sendFileFromUrl(from, `https://rest.farzain.com/api/special/fansign/cosplay/cosplay.php?apikey=rambu&text=${q}`, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | cosplay image!'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'trumptwt':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(10)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=trumptweet&text=${q}&raw=1`, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | trumptwt image!'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'kanna':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(7)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=kannagen&text=${q}&raw=1`, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | kanna image!'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'silktext':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(10)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                await iluser.sendFileFromUrl(from, `https://api.vhtear.com/silktext?text=${q}&apikey=${vhtearkey}`, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | silktext image!'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'mymind':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(8)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                await iluser.sendFileFromUrl(from, `https://nekobot.xyz/api/imagegen?type=changemymind&text=${q}&raw=1`, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | mymind image!'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'coffee':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(8)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                const cofcof = await axios.get(`https://tobz-api.herokuapp.com/api/photooxy?theme=coffee&text=${q}&apikey=${tobzkey}`)
+                await iluser.sendFileFromUrl(from, cofcof.data.result, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | coffee image!'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'kpop':
+        case prefix+'k-pop':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const pelastik = await axios.get(`https://tobz-api.herokuapp.com/api/randomkpop?apikey=${tobzkey}`)
+                await iluser.sendFileFromUrl(from, pelastik.data.result, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | K-POP image'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'ukir':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(6)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                const cofcoff = await axios.get(`https://tobz-api.herokuapp.com/api/photooxy?theme=wood_block&text=${q}&apikey=${tobzkey}`)
+                await iluser.sendFileFromUrl(from, cofcoff.data.result, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | ukir image'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+        case prefix+'smoketext':{
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            limitAdd(serial)
+                const q = body.slice(11)
+                if (!q) return await iluser.reply(from, `Textnya mana?`, id)
+                const smoje = await axios.get(`https://api.zeks.xyz/api/smoketext?text=${q}&apikey=apivinz`)
+                await iluser.sendFileFromUrl(from, smoje.data.result, `iluser.jpg`, `${mess.iklann}`, id)
+                    .then(() => console.log('SUCCESS | smoketext'))
+                    .catch(async (err) => {
+                        console.error(err)
+                        await iluser.reply(from, 'Error!', id)
+                    })
+                }
+            break
+
         case prefix+'bacotadd':      
         	if(isReg(obj)) return  
                         if (args.length == 0) return iluser.reply(message.from, `Untuk add kata kata toxic ${prefix}bacotadd kata kata contoh\n.toxic add rafi ganteng`, message.id)
@@ -1656,15 +2115,17 @@ GIFT KUOTA LIMIT*
         
         case prefix+'takestick': // By: VideFrelan
         case prefix+'take':
-                //if (!q.includes('|')) return await iluser.reply(from, `wrong format`, id)
-                if (!isOwner) return iluser.reply(from, 'tutup dulu', id)
+                if(isReg(obj)) return
+                    if (isLimit(serial)) return 
+                    
+                    await limitAdd(serial)
+                if (!isPremium) return iluser.reply(from, '⛔ *AKSES DI TOLAK* ⛔\n\nNte Premium?', id)
                 if (quotedMsg && quotedMsg.type == 'sticker') {
                     const mediaDataTake = await decryptMedia(quotedMsg, uaOverride)
-                    //await iluser.reply(from, `${mess.wait}`, id)
                     const take = body.slice(6)
                     const packname = take.split('|')[0]
                     const author = take.split('|')[1]
-                    exif.create(packname, author, `takestick_${sender.id}`)
+                    takestick.create(packname, author, `takestick_${sender.id}`)
                     webp.buffer2webpbuffer(mediaDataTake, 'jpg', '-q 100')
                         .then((res) => {
                             sharp(res)
@@ -1679,7 +2140,7 @@ GIFT KUOTA LIMIT*
                                         console.log(`Sticker processed for ${processTime(t, moment())} seconds`)
                                         fs.unlinkSync(`./temp/takestick_${sender.id}.webp`)
                                         fs.unlinkSync(`./temp/takestickstage_${sender.id}.webp`)
-                                        //fs.unlinkSync(`./temp/takestick.exif`)
+                                        fs.unlinkSync(`./temp/takestick.exif`)
                                     }
                                 })
                         })
@@ -1697,7 +2158,6 @@ GIFT KUOTA LIMIT*
                     const encryptMedi = isQuotedImage ? quotedMsg : message
                     const datanobg = await decryptMedia(encryptMedi, uaOverride)
                     const fotonobg = await uploadImages(datanobg , `FotoPiyo.${sender.id}`)
-                    //await iluser.reply(from , ind.wait() , id)
                    const nobgg = await axios.get(`https://api.vhtear.com/removebgwithurl?link=${fotonobg}&apikey=${vhtearkey}`)
                    await iluser.sendStickerfromUrl(from, nobgg.data.result.image  ,'',  'Ini kak' , id)
                     console.log('Succes sending Sticker ')
@@ -1712,7 +2172,7 @@ GIFT KUOTA LIMIT*
                 if(isReg(obj)) return
                 if (isLimit(serial)) return
                 await limitAdd(serial)
-            const a = "by: iluser_BOT"
+            const a = "By: iluser_BOT WhatsApp"
             const b = "instagram.com/iluser.bot"
             await createExif(a,b)
             await sleep(1000)
@@ -1849,7 +2309,6 @@ GIFT KUOTA LIMIT*
         case prefix+'springflow': //BY OGGYBOT
                 if(isReg(obj)) return
                 if (isLimit(serial)) return
-                //iluser.reply(from, '[WAIT] Sedang di proses⏳ silahkan tunggu ± 1 min!', id)
                 if (isMedia && type === 'image') {
                 const mediaData = await decryptMedia(message, uaOverride)
                 const getUrla = await uploadImages(mediaData, false)
@@ -2021,7 +2480,6 @@ GIFT KUOTA LIMIT*
                 const fotoWtNya = await uploadImages(dataPotoWt, `fotoProfilWt.${sender.id}`)
                /// await iluser.reply(from, `${mess.wait}`, id)
                 await iluser.sendFileFromUrl(from, `https://some-random-api.ml/canvas/wasted?avatar=${fotoWtNya}`, 'Wasted.jpg', `${mess.iklann}`, id)
-                console.log('Success sending Wasted image!')
                 .catch(async (err) => {
                     console.error(err)
                     await iluser.reply(from, 'Error!', id)
@@ -2568,7 +3026,7 @@ ${desc}`)
               break        
         case prefix+'left':
             if(isReg(obj)) return
-            if (!isOwner) return iluser.reply(message.from, 'Fitur ini dimatikan developer bot', message.id)
+            if (!isOwner) return iluser.reply(message.from, 'Fitur ini dinonaktifkan developer bot', message.id)
             if (!isGroupMsg) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nHanya dapat di gunakan di dalam grup', message.id)
             if (!isGroupAdmins) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?`, message.id)
             if (args.length === 1) return iluser.reply(message.from, 'Pilih enable atau disable!', message.id)
@@ -3564,7 +4022,6 @@ ${desc}`)
                             await iluser.sendFileFromUrl(from, aiquote.data, 'quote.jpg', `${mess.iklann}`, id )
                         break
         case prefix+'puisi2':
-                //await iluser.reply(from, `ind.wait()`, id)
                 await iluser.sendFileFromUrl(from, `https://api.vhtear.com/puisi_image&apikey=${vhtearkey}`, '', `${mess.iklann}`, id)
                 break
          /*case prefix+'play':{
@@ -3895,6 +4352,7 @@ Youtube Play Songs By iluser_BOT :)`
                 }
                 break
                 case prefix+'tomp3':
+                case prefix+'toaudio':
                     if(isReg(obj)) return
                     if (isLimit(serial)) return 
             
@@ -3977,7 +4435,6 @@ case prefix+'insta':
             await limitAdd(serial)
                 if (args.length === 1) return iluser.reply(from, 'Kirim perintah *+ig [linkIg]* untuk contoh silahkan kirim perintah *!readme*', id)
                 if (!args[1].includes('instagram.com')) return iluser.reply(from, `Salah linknya kak`, id)
-                //iluser.reply(from, 'ind.wait()', id)
                 let arrBln = ["Januari","Februaru","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"]
                 const idRegex = /([-_0-9A-Za-z]{11})/
                 const idIGG = args[1].match(idRegex)
@@ -5849,7 +6306,7 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
            		let nulos= body.slice(7)
                 console.log('Creating writing...')
                 await iluser.sendFileFromUrl(from, `https://api.vhtear.com/write?text=${nulos}&apikey=${vhtearkey}`, 'nulis.jpg', `${mess.iklann}`, message.id)
-                    .then(() => console.log('Success sending write image!'))
+                    .then(() => console.log('SUCCESS | nulis'))
                     .catch(async (err) => {
                         console.error(err)
                         await iluser.reply(from, `Error!`, message.id)
@@ -6115,7 +6572,7 @@ case prefix+'nulis3':
         case prefix+'bc': // KASIH CREDIT DONG KALO COPAS
             if (!isPilot && !isOwner) return 
                 bctxt = body.slice(4)
-                txtbc = `\n${bctxt}\n\n\n-= *iluser_BOT* =-`
+                txtbc = `\n${bctxt}\n\n\n_*iluser_BOT*_ | t.me/iluser_BOT`
                 const semuagrup = await iluser.getAllChatIds();
                 if(quotedMsg && quotedMsg.type == 'image'){
                     const mediaData = await decryptMedia(quotedMsg)
@@ -6198,9 +6655,9 @@ case prefix+'nulis3':
             iluser.sendText(message.from, 'Succes clear all chat!', message.id)
             break
         case prefix+'add':
+            //iluser.reply(from, `Fitur ini di nonaktifkan developer bot.`, id)
             try {
             if (!isGroupMsg) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nHanya dapat di gunakan di dalam grup', message.id)
-            //if (args.length === 1) return iluser.reply(message.from, `Untuk menggunakan fitur ini, kirim perintah *${prefix}add* 628xxxxx`, message.id)
             if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?`, message.id)
             if (!isBotGroupAdmins) return iluser.reply(from, 'Perintah ini hanya bisa di gunakan ketika bot menjadi admin', id)
                 if (!quotedMsg) {
@@ -6208,14 +6665,16 @@ case prefix+'nulis3':
                 await iluser.reply(from, `Oke mint. Menambahkan ${newMem} ke grup.`, id)
                 await sleep(3000)
                 await iluser.addParticipant(groupId, newMem + '@c.us')
+                console.log(`SUCCESS | Nambah member`)
                 } else {
                     const qmid = quotedMsgObj.sender.id
                     await iluser.reply(from, `Oke mint. Menambahkan ${qmid.replace('@c.us', '')} ke grup.`, id)
                 await sleep(3000)
                 await iluser.addParticipant(groupId, qmid)
+                console.log(`SUCCESS | Nambah member`)
                 }
             } catch(e) {
-                await iluser.sendText(from, `*Target tidak dapat di masukkan ke dalam grup*\n1. Mungkin nomornya tidak teregistrasi di WhatsApp\n2. Hanya orang yang ada di kontaknya yg bisa menambahkan\n3. Kesalahan pada server`)
+                await iluser.reply(from, `*Target tidak dapat di masukkan ke dalam grup*\n1. Mungkin nomornya tidak teregistrasi di WhatsApp\n2. Hanya orang yang ada di kontaknya yg bisa menambahkan\n3. Kesalahan pada server`, id)
             }
             break
         case prefix+'okick':
