@@ -454,8 +454,8 @@ module.exports = iluser = async (iluser, message) => {
 
         if (isGroupMsg && isBotGroupAdmins && !isGroupAdmins && !isOwner){
             if (chats.length > 15000){
-                await iluser.reply(from, `*LONG TEXT DETECTED*\n\nTarget mengirim pesan lebih dari 15000 huruf. Akan di keluarkan dalam 5 detik!`, id)
-                await sleep(5000)
+                await iluser.reply(from, `*LONG TEXT DETECTED*\n\nTarget mengirim pesan lebih dari 15000 huruf. Akan di wisuda dalam 2 detik!`, id)
+                await sleep(2000)
                 await iluser.removeParticipant(groupId, sender.id)
             }
         }
@@ -471,8 +471,8 @@ module.exports = iluser = async (iluser, message) => {
                     if (err) return console.error(err)
                     if (status) {
                         console.log(color('[FILTER]', 'red'), color('The link is classified as NSFW!', 'yellow'))
-                        iluser.reply(message.from, `Link mengandung unsur pornografi!\nSekarang di wisuda dalam 3 detik!`, id)
-                        sleep(3000)
+                        iluser.reply(message.from, `Link mengandung unsur pornografi!\nSekarang di wisuda dalam 2 detik!`, id)
+                        sleep(2000)
                         iluser.removeParticipant(groupId, sender.id)
                     } else {
                         console.log(('[NEUTRAL]'), color('The link is safe!'))
@@ -492,8 +492,8 @@ module.exports = iluser = async (iluser, message) => {
                     if (err) return console.error(err)
                     if (status) {
                         console.log(color('[FILTER]', 'red'), color('The link is classified as NSFW!', 'yellow'))
-                        iluser.reply(message.from, `Link mengandung unsur pornografi!\nSekarang di wisuda dalam 3 detik!`, id)
-                        sleep(3000)
+                        iluser.reply(message.from, `Link mengandung unsur pornografi!\nSekarang di wisuda dalam 2 detik!`, id)
+                        sleep(2000)
                         iluser.removeParticipant(groupId, sender.id)
                     } else {
                         console.log(('[NEUTRAL]'), color('The link is safe!'))
@@ -512,9 +512,9 @@ module.exports = iluser = async (iluser, message) => {
                 const { confidence } = res
                 const nilaipersen = ((confidence / 1.000000) * 100).toFixed(1) + '%'
                     if (!res.sfw) {
-                    iluser.reply(from, `*PORN DETECTOR*\n\nGambar ini mengandung unsur pornografi!\n*Keyakinan: ${nilaipersen}/100%*!\n\nTarget akan di kick dalam 3 detik!`, id)
+                    iluser.reply(from, `*PORN DETECTOR*\n\nGambar ini mengandung unsur pornografi!\n*Keyakinan: ${nilaipersen}/100%*!\n\nTarget akan di kick dalam 2 detik!`, id)
                     .then(() => {
-                        sleep(3000)
+                        sleep(2000)
                         iluser.removeParticipant(groupId, sender.id)
                         console.log(color('[FILTER]', 'red'), color(`${sender.id} telah di-kick karena mengirimkan foto 18+`, 'green'))
                     })
@@ -1017,12 +1017,12 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
                         if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?', message.id)
                         muted.push(chatId)
                         fs.writeFileSync('./lib/database/muted.json', JSON.stringify(muted, null, 2))
-                        sleep(2000)
+                        sleep(1000)
                         iluser.reply(message.from, `Bot telah dinonaktifkan pada grup ini\nKetik ${prefix}bot on untuk mengaktifkan`, message.id)
                     }else{
                         muted.push(chatId)
                         fs.writeFileSync('./lib/database/muted.json', JSON.stringify(muted, null, 2))
-                        sleep(2000)
+                        sleep(1000)
                         iluser.reply(message.from, `Bot telah dinonaktifkan pada grup ini\nKetik ${prefix}bot on untuk mengaktifkan`, message.id)
                     }
                 }
@@ -1032,13 +1032,13 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
                         let index = muted.indexOf(chatId);
                         muted.splice(index,1)
                         fs.writeFileSync('./lib/database/muted.json', JSON.stringify(muted, null, 2))
-                        sleep(2000)
+                        sleep(1000)
                         iluser.reply(message.from, 'Bot telah di aktifkan pada grup ini', message.id)         
                     }else{
                         let index = muted.indexOf(chatId);
                         muted.splice(index,1)
                         fs.writeFileSync('./lib/database/muted.json', JSON.stringify(muted, null, 2))
-                        sleep(2000)
+                        sleep(1000)
                         iluser.reply(message.from, 'Bot telah di aktifkan pada grup ini', message.id)                   
                     }
                 }
@@ -1069,23 +1069,23 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
         if (isBlocked && isCmd) return iluser.reply(from, mess.blockk, message.id)
         if (isBanned && isCmd) return iluser.reply(from, mess.bann, message.id)
 
-/*            if (!isCmd && !isGroupMsg && isPremium) {
-            axios.get(`https://lol-human.herokuapp.com/api/simi/${encodeURIComponent(message.body)}&lang=id`)
-.then(({data}) => {               
-                iluser.reply(from, `${data.result}`, id)
-                console.log(data)
-            })
-}
-
-           /* if (!isCmd && !isGroupMsg && !isPremium) {
+            if (!isCmd && !isGroupMsg && isPremium) {
             axios.get(`http://simsumi.herokuapp.com/api?text=${encodeURIComponent(message.body)}&lang=id`)
 .then(({data}) => {               
-                iluser.reply(from, `*Simi:* ${data.success}\n\n\nFollow me on instagram.com/iluser.bot`, id)
+                iluser.reply(from, `${data.success}`, id)
                 console.log(data)
             })
-} */
+} 
 /*
-            if (!isCmd && isPremium  && isGroupMsg && quotedMsgObj.fromMe) {
+            if (!isCmd && !isGroupMsg && !isPremium) {
+            axios.get(`http://simsumi.herokuapp.com/api?text=${encodeURIComponent(message.body)}&lang=id`)
+.then(({data}) => {               
+                iluser.reply(from, `${data.success}`, id)
+                console.log(data)
+            })
+} 
+
+ /*           if (!isCmd && isPremium  && isGroupMsg && quotedMsgObj.fromMe) {
             axios.get(`http://simsumi.herokuapp.com/api?text=${encodeURIComponent(message.body)}&lang=id`)
 .then(({data}) => {               
                 iluser.reply(from, `${data.success}`, id)
@@ -1191,13 +1191,13 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
                 break
 
         case `${prefix}`: 
-                await sleep(3000)
+               // await sleep(1000)
                 const namfil = body.slice(2)
                 await iluser.sendPtt(from, `./media/audio/${namfil}.mp3`, id)
             break
         case `${prefix}setvn`: 
             if (!isOwner && !isPremium && !isPilot) return await iluser.reply(from, 'Nte premium?', id)
-            await sleep(2000)
+            //await sleep(2000)
             let nmfil = body.slice(7)
             if (isQuotedAudio){
                 const mediaData = await decryptMedia(quotedMsg, uaOverride)
@@ -1223,7 +1223,7 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
             for (let i of vnlist) {
                 vn += `• ${i}\n`
             }
-            await sleep(2000)
+           // await sleep(2000)
             await iluser.reply(from, vn, id)
             break
 
@@ -1255,7 +1255,7 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
             break
         case prefix+'tes':	
 			if (!isPilot && !isOwner) return             
-            await sleep(2000)
+            //await sleep(2000)
             await iluser.reply(message.from, `ILWAN GANTENG NO DEBAT!`, id)
 		 	//await iluser.reply(from, `Sukses menambahkan ${pushname} menjadi pilot bot!`, id)
             break
@@ -1405,7 +1405,7 @@ Update : *${korona.terakhir}*
         case prefix+'findsk':
             if(isReg(obj)) return
             if (isLimit(serial)) return 
-                    if (args.length === 1) return iluser.reply(from, `Kirim perintah *${prefix}findsticker namastiker*\nContoh : *${prefix}findsticker pentol*`, message.id)
+                    if (args.length === 1) return iluser.reply(from, `Contoh : *${prefix}findsticker pentol*`, message.id)
                     try {
                         const s = await axios.get('https://api.vhtear.com/wasticker?query=' + body.slice(13) + `&apikey=${vhtearkey}`)
                         for (let i = 0; i < s.data.result.data.length; i++) {
@@ -2014,7 +2014,7 @@ GIFT KUOTA LIMIT*
             if(isReg(obj)) return
                 if (isLimit(serial)) return 
                 
-                await sleep(2000)
+               // await sleep(2000)
                 await limitAdd(serial)
                 let bacotkun = bacot[Math.floor(Math.random() * bacot.length)]
                 iluser.reply(from, bacotkun, message.id)              
@@ -2158,7 +2158,7 @@ GIFT KUOTA LIMIT*
                     const encryptMedi = isQuotedImage ? quotedMsg : message
                     const datanobg = await decryptMedia(encryptMedi, uaOverride)
                     const fotonobg = await uploadImages(datanobg , `FotoPiyo.${sender.id}`)
-                   const nobgg = await axios.get(`https://api.vhtear.com/removebgwithurl?link=${fotonobg}&apikey=${vhtearkey}`)
+                   const nobgg = await axios.get(`https://api.vhtear.com/removebgwithurl?link=${fotonobg}&apikey=${vhtearkey}`, {author:'t.me/iluser_BOT', pack:'By: iluser_BOT WhatsApp'})
                    await iluser.sendStickerfromUrl(from, nobgg.data.result.image  ,'',  'Ini kak' , id)
                     console.log('Succes sending Sticker ')
                 }
@@ -2172,8 +2172,8 @@ GIFT KUOTA LIMIT*
                 if(isReg(obj)) return
                 if (isLimit(serial)) return
                 await limitAdd(serial)
-            const a = "By: iluser_BOT WhatsApp"
-            const b = "instagram.com/iluser.bot"
+            const a = "By: iluser_BOT"
+            const b = "t.me/iluser_bot"
             await createExif(a,b)
             await sleep(1000)
             //await iluser.reply(from, 'processing...', message.id)
@@ -2389,7 +2389,7 @@ GIFT KUOTA LIMIT*
                             if(gasMake.status == true)
                             {
                                 try{
-                                    await iluser.sendImageAsSticker(message.from, gasMake.base64)
+                                    await iluser.sendImageAsSticker(message.from, gasMake.base64, {author:'t.me/iluser_BOT', pack:'By: iluser_BOT WhatsApp'})
                                     //iluser.reply(message.from, `${mess.iklann}`,id)
                                 }catch(err) {
                                     await iluser.reply(message.from, 'Gagal membuat.', message.id)
@@ -2402,7 +2402,7 @@ GIFT KUOTA LIMIT*
                             if(gasMake.status == true)
                             {
                                 try{
-                                    await iluser.sendImageAsSticker(message.from, gasMake.base64)
+                                    await iluser.sendImageAsSticker(message.from, gasMake.base64, {author:'t.me/iluser_BOT', pack:'By: iluser_BOT WhatsApp'})
                                     //iluser.reply(message.from, `${mess.iklann}`,id)
                                 }catch(err) {
                                     await iluser.reply(message.from, 'Gagal membuat.', message.id)
@@ -2440,10 +2440,10 @@ GIFT KUOTA LIMIT*
             try {
                 if (quotedMsgObj == null) {
                     if (args.length === 1) return iluser.reply(message.from, `Contoh ${prefix}ttg aku bukan boneka`, message.id)
-                        await iluser.sendStickerfromUrl(message.from, `https://api.vhtear.com/textxgif?text=${body.slice(5)}&apikey=${vhtearkey}`)
+                        await iluser.sendStickerfromUrl(message.from, `https://api.vhtear.com/textxgif?text=${body.slice(5)}&apikey=${vhtearkey}`, {author:'t.me/iluser_BOT', pack:'By: iluser_BOT WhatsApp'})
                     	//iluser.reply(message.from, `${mess.iklann}`,id)
                 } else {
-                    await iluser.sendStickerfromUrl(message.from, `https://api.vhtear.com/textxgif?text=${quotedMsgObj}&apikey=${vhtearkey}`)
+                    await iluser.sendStickerfromUrl(message.from, `https://api.vhtear.com/textxgif?text=${quotedMsgObj}&apikey=${vhtearkey}`, {author:'t.me/iluser_BOT', pack:'By: iluser_BOT WhatsApp'})
                    // iluser.reply(message.from, `${mess.iklann}`,id)
                 }
             } catch(e) {
@@ -2736,7 +2736,7 @@ ${desc}`)
             
             await limitAdd(serial)
             try {
-                if (args.length === 1) return iluser.reply(message.from, `Kirim perintah *${prefix}tts [ Bahasa ] [ Teks ]*, contoh *${prefix}tts id Pagi beban negara*`, message.id)
+                if (args.length === 1) return iluser.reply(message.from, `Contoh *${prefix}tts id Pagi beban*`, message.id)
                 var dataBhs = args[1]      
                 const ttsHZ = require('node-gtts')(dataBhs)
                 var dataText = body.slice(8)
@@ -2992,7 +2992,7 @@ ${desc}`)
             if (isLimit(serial)) return 
             
             await limitAdd(serial)
-            if (args.length === 1)  return iluser.reply(message.from, 'Kirim perintah *@sandwriting [ Teks ]*\nContoh *@sandwriting HARDIANTO GANS*', message.id)
+            if (args.length === 1)  return iluser.reply(message.from, `Contoh *${prefix}sandwriting iluser_bot*`, message.id)
             const swrt1 = body.slice(13)
             try {
             const swrt2 = await axios.get('https://api.vhtear.com/sand_writing?text1=' + swrt1 + '&apikey=' + vhtearkey)
@@ -3008,6 +3008,23 @@ ${desc}`)
             iluser.sendText(ownerNumber, 'Sand Writing Error : ' + err)
               }
             break
+
+        case prefix+'editlock':
+            if(isReg(obj)) return
+            if (!isGroupMsg) return iluser.reply(message.from, 'Fitur ini hanya bisa di gunakan dalam group', message.id)
+            if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?`, message.id)
+            if (!isBotGroupAdmins) return iluser.reply(message.from, 'Fitur ini hanya bisa di gunakan ketika bot menjadi admin', message.id)
+                iluser.setGroupEditToAdminsOnly(groupId, true)
+                iluser.sendTextWithMentions(message.from, `Edit info grup telah di kunci oleh @${sender.id.replace('@c.us','')}`, message.id)
+              break
+        case prefix+'editopen':
+            if(isReg(obj)) return
+            if (!isGroupMsg) return iluser.reply(message.from, 'Fitur ini hanya bisa di gunakan dalam group', message.id)
+            if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?`, message.id)
+            if (!isBotGroupAdmins) return iluser.reply(message.from, 'Fitur ini hanya bisa di gunakan ketika bot menjadi admin', message.id)
+                iluser.setGroupEditToAdminsOnly(groupId, false)
+                iluser.sendTextWithMentions(message.from, `Edit info grup talah di buka oleh @${sender.id.replace('@c.us','')}`, message.id)
+              break
           case prefix+'lock':
             if(isReg(obj)) return
             if (!isGroupMsg) return iluser.reply(message.from, 'Fitur ini hanya bisa di gunakan dalam group', message.id)
@@ -3531,7 +3548,7 @@ ${desc}`)
         case prefix+'jadwalsholat':
             if(isReg(obj)) return
             if (isLimit(serial)) return 
-            if (args.length === 1) return iluser.reply(message.from, `ontoh : *${prefix}jadwalShalat Tangerang*\nUntuk list daerah kirim perintah *${prefix}listDaerah*`)
+            if (args.length === 1) return iluser.reply(message.from, `Contoh : *${prefix}jadwalShalat Tangerang*`, id)
             const daerah = body.slice(14)
             const jadwalShalat = await axios.get(`https://api.vhtear.com/jadwalsholat?query=${daerah}&apiKey=${vhtearkey}`)
             if (jadwalShalat.data.error) return iluser.reply(message.from, jadwalShalat.data.error, message.id)
@@ -4433,8 +4450,8 @@ case prefix+'insta':
             if (isLimit(serial)) return 
             
             await limitAdd(serial)
-                if (args.length === 1) return iluser.reply(from, 'Kirim perintah *+ig [linkIg]* untuk contoh silahkan kirim perintah *!readme*', id)
-                if (!args[1].includes('instagram.com')) return iluser.reply(from, `Salah linknya kak`, id)
+                if (args.length === 1) return iluser.reply(from, `Linknya mana tol?`, id)
+                if (!args[1].includes('instagram.com')) return iluser.reply(from, `urlnya bukan dari instagram itu tol`, id)
                 let arrBln = ["Januari","Februaru","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"]
                 const idRegex = /([-_0-9A-Za-z]{11})/
                 const idIGG = args[1].match(idRegex)
@@ -5229,7 +5246,7 @@ case prefix+'yt': {
                 datax += `${i + 1}. Kel. *${region}* Berstatus *Zona ${_zone}`
             }
             const texto = `*CEK LOKASI PENYEBARAN COVID-19*\nHasil pemeriksaan dari lokasi yang anda kirim adalah *${zoneStatus.status}* ${zoneStatus.optional}\n\nInformasi lokasi terdampak disekitar anda:\n${datax}`
-            iluser.sendText(message.from, texto, id)
+            iluser.reply(message.from, texto, id)
             break	
     case prefix+'infonomor':
             if(isReg(obj)) return         
@@ -5916,7 +5933,7 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
         case prefix+'joox': {
             if(isReg(obj)) return 
             if(isLimit(serial)) return
-            if (args.length === 1) return await iluser.reply(from, 'Kirim perintah .joox nama lagu \nContoh .joox armada apa kabar sayang')
+            if (args.length === 1) return await iluser.reply(from, 'Contoh .joox virgoun surat cinta untuk starla')
             const play = body.slice(6)
             try {
                 const joox = await get.get('https://mnazria.herokuapp.com/api/jooxnich?search='+ play).json()
@@ -5937,7 +5954,7 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
         case prefix+'checkip':
             if(isReg(obj)) return
             if (isLimit(serial)) return 
-            if (args.length === 1) return iluser.reply(from, 'Kirim perintah *#checkip [ipaddress]*\nContoh : *#checkip 182.0.144.145*', id)
+            if (args.length === 1) return iluser.reply(from, `Contoh: ${prefix}checkip 182.0.144.145`, id)
             argz = body.trim().split(' ')
             console.log(...argz[0])
             var slicedArgs = Array.prototype.slice.call(arg, 0);
@@ -6282,7 +6299,7 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
             if (isLimit(serial)) return 
             
             await limitAdd(serial)
-            if (args.length === 1) return iluser.reply(message.from, 'Kirim perintah *#jadwalTv [channel]*', message.id)
+            if (args.length === 1) return iluser.reply(message.from, `Contoh: ${prefix}tv antv`, message.id)
             const queri = body.slice(4)
             const jadwal = await fetch(`https://api.zeks.xyz/api/jadwaltv?channel=${queri}&apikey=apivinz`)
 			const jdwl = await jadwal.json()
@@ -6535,7 +6552,7 @@ case prefix+'nulis3':
                     })
                 break
         case `${prefix}wallanime`:
-                    await sleep(2000)
+                   // await sleep(2000)
                     const walnime = ['https://wallpaperaccess.com/full/395986.jpg', 'https://wallpaperaccess.com/full/21628.jpg', 'https://wallpaperaccess.com/full/21622.jpg', 'https://wallpaperaccess.com/full/21612.jpg', 'https://wallpaperaccess.com/full/21611.png', 'https://wallpaperaccess.com/full/21597.jpg', 'https://cdn.nekos.life/wallpaper/QwGLg4oFkfY.png', 'https://wallpaperaccess.com/full/21591.jpg', 'https://cdn.nekos.life/wallpaper/bUzSjcYxZxQ.jpg', 'https://cdn.nekos.life/wallpaper/j49zxzaUcjQ.jpg', 'https://cdn.nekos.life/wallpaper/YLTH5KuvGX8.png', 'https://cdn.nekos.life/wallpaper/Xi6Edg133m8.jpg', 'https://cdn.nekos.life/wallpaper/qvahUaFIgUY.png', 'https://cdn.nekos.life/wallpaper/leC8q3u8BSk.jpg', 'https://cdn.nekos.life/wallpaper/tSUw8s04Zy0.jpg', 'https://cdn.nekos.life/wallpaper/sqsj3sS6EJE.png', 'https://cdn.nekos.life/wallpaper/HmjdX_s4PU4.png', 'https://cdn.nekos.life/wallpaper/Oe2lKgLqEXY.jpg', 'https://cdn.nekos.life/wallpaper/GTwbUYI-xTc.jpg', 'https://cdn.nekos.life/wallpaper/nn_nA8wTeP0.png', 'https://cdn.nekos.life/wallpaper/Q63o6v-UUa8.png', 'https://cdn.nekos.life/wallpaper/ZXLFm05K16Q.jpg', 'https://cdn.nekos.life/wallpaper/cwl_1tuUPuQ.png', 'https://cdn.nekos.life/wallpaper/wWhtfdbfAgM.jpg', 'https://cdn.nekos.life/wallpaper/3pj0Xy84cPg.jpg', 'https://cdn.nekos.life/wallpaper/sBoo8_j3fkI.jpg', 'https://cdn.nekos.life/wallpaper/gCUl_TVizsY.png', 'https://cdn.nekos.life/wallpaper/LmTi1k9REW8.jpg', 'https://cdn.nekos.life/wallpaper/sbq_4WW2PUM.jpg', 'https://cdn.nekos.life/wallpaper/QOSUXEbzDQA.png', 'https://cdn.nekos.life/wallpaper/khaqGIHsiqk.jpg', 'https://cdn.nekos.life/wallpaper/iFtEXugqQgA.png', 'https://cdn.nekos.life/wallpaper/deFKIDdRe1I.jpg', 'https://cdn.nekos.life/wallpaper/OHZVtvDm0gk.jpg', 'https://cdn.nekos.life/wallpaper/YZYa00Hp2mk.jpg', 'https://cdn.nekos.life/wallpaper/R8nPIKQKo9g.png', 'https://cdn.nekos.life/wallpaper/_brn3qpRBEE.jpg', 'https://cdn.nekos.life/wallpaper/ADTEQdaHhFI.png', 'https://cdn.nekos.life/wallpaper/MGvWl6om-Fw.jpg', 'https://cdn.nekos.life/wallpaper/YGmpjZW3AoQ.jpg', 'https://cdn.nekos.life/wallpaper/hNCgoY-mQPI.jpg', 'https://cdn.nekos.life/wallpaper/3db40hylKs8.png', 'https://cdn.nekos.life/wallpaper/iQ2FSo5nCF8.jpg', 'https://cdn.nekos.life/wallpaper/meaSEfeq9QM.png', 'https://cdn.nekos.life/wallpaper/CmEmn79xnZU.jpg', 'https://cdn.nekos.life/wallpaper/MAL18nB-yBI.jpg', 'https://cdn.nekos.life/wallpaper/FUuBi2xODuI.jpg', 'https://cdn.nekos.life/wallpaper/ez-vNNuk6Ck.jpg', 'https://cdn.nekos.life/wallpaper/K4-z0Bc0Vpc.jpg', 'https://cdn.nekos.life/wallpaper/Y4JMbswrNg8.jpg', 'https://cdn.nekos.life/wallpaper/ffbPXIxt4-0.png', 'https://cdn.nekos.life/wallpaper/x63h_W8KFL8.jpg', 'https://cdn.nekos.life/wallpaper/lktzjDRhWyg.jpg', 'https://cdn.nekos.life/wallpaper/j7oQtvRZBOI.jpg', 'https://cdn.nekos.life/wallpaper/MQQEAD7TUpQ.png', 'https://cdn.nekos.life/wallpaper/lEG1-Eeva6Y.png', 'https://cdn.nekos.life/wallpaper/Loh5wf0O5Aw.png', 'https://cdn.nekos.life/wallpaper/yO6ioREenLA.png', 'https://cdn.nekos.life/wallpaper/4vKWTVgMNDc.jpg', 'https://cdn.nekos.life/wallpaper/Yk22OErU8eg.png', 'https://cdn.nekos.life/wallpaper/Y5uf1hsnufE.png', 'https://cdn.nekos.life/wallpaper/xAmBpMUd2Zw.jpg', 'https://cdn.nekos.life/wallpaper/f_RWFoWciRE.jpg', 'https://cdn.nekos.life/wallpaper/Y9qjP2Y__PA.jpg', 'https://cdn.nekos.life/wallpaper/eqEzgohpPwc.jpg', 'https://cdn.nekos.life/wallpaper/s1MBos_ZGWo.jpg', 'https://cdn.nekos.life/wallpaper/PtW0or_Pa9c.png', 'https://cdn.nekos.life/wallpaper/32EAswpy3M8.png', 'https://cdn.nekos.life/wallpaper/Z6eJZf5xhcE.png', 'https://cdn.nekos.life/wallpaper/xdiSF731IFY.jpg', 'https://cdn.nekos.life/wallpaper/Y9r9trNYadY.png', 'https://cdn.nekos.life/wallpaper/8bH8CXn-sOg.jpg', 'https://cdn.nekos.life/wallpaper/a02DmIFzRBE.png', 'https://cdn.nekos.life/wallpaper/MnrbXcPa7Oo.png', 'https://cdn.nekos.life/wallpaper/s1Tc9xnugDk.jpg', 'https://cdn.nekos.life/wallpaper/zRqEx2gnfmg.jpg', 'https://cdn.nekos.life/wallpaper/PtW0or_Pa9c.png', 'https://cdn.nekos.life/wallpaper/0ECCRW9soHM.jpg', 'https://cdn.nekos.life/wallpaper/kAw8QHl_wbM.jpg', 'https://cdn.nekos.life/wallpaper/ZXcaFmpOlLk.jpg', 'https://cdn.nekos.life/wallpaper/WVEdi9Ng8UE.png', 'https://cdn.nekos.life/wallpaper/IRu29rNgcYU.png', 'https://cdn.nekos.life/wallpaper/LgIJ_1AL3rM.jpg', 'https://cdn.nekos.life/wallpaper/DVD5_fLJEZA.jpg', 'https://cdn.nekos.life/wallpaper/siqOQ7k8qqk.jpg', 'https://cdn.nekos.life/wallpaper/CXNX_15eGEQ.png', 'https://cdn.nekos.life/wallpaper/s62tGjOTHnk.jpg', 'https://cdn.nekos.life/wallpaper/tmQ5ce6EfJE.png', 'https://cdn.nekos.life/wallpaper/Zju7qlBMcQ4.jpg', 'https://cdn.nekos.life/wallpaper/CPOc_bMAh2Q.png', 'https://cdn.nekos.life/wallpaper/Ew57S1KtqsY.jpg', 'https://cdn.nekos.life/wallpaper/hVpFbYJmZZc.jpg', 'https://cdn.nekos.life/wallpaper/sb9_J28pftY.jpg', 'https://cdn.nekos.life/wallpaper/JDoIi_IOB04.jpg', 'https://cdn.nekos.life/wallpaper/rG76AaUZXzk.jpg', 'https://cdn.nekos.life/wallpaper/9ru2luBo360.png', 'https://cdn.nekos.life/wallpaper/ghCgiWFxGwY.png', 'https://cdn.nekos.life/wallpaper/OSR-i-Rh7ZY.png', 'https://cdn.nekos.life/wallpaper/65VgtPyweCc.jpg', 'https://cdn.nekos.life/wallpaper/3vn-0FkNSbM.jpg', 'https://cdn.nekos.life/wallpaper/u02Y0-AJPL0.jpg', 'https://cdn.nekos.life/wallpaper/_-Z-0fGflRc.jpg', 'https://cdn.nekos.life/wallpaper/3VjNKqEPp58.jpg', 'https://cdn.nekos.life/wallpaper/NoG4lKnk6Sc.jpg', 'https://cdn.nekos.life/wallpaper/xiTxgRMA_IA.jpg', 'https://cdn.nekos.life/wallpaper/yq1ZswdOGpg.png', 'https://cdn.nekos.life/wallpaper/4SUxw4M3UMA.png', 'https://cdn.nekos.life/wallpaper/cUPnQOHNLg0.jpg', 'https://cdn.nekos.life/wallpaper/zczjuLWRisA.jpg', 'https://cdn.nekos.life/wallpaper/TcxvU_diaC0.png', 'https://cdn.nekos.life/wallpaper/7qqWhEF_uoY.jpg', 'https://cdn.nekos.life/wallpaper/J4t_7DvoUZw.jpg', 'https://cdn.nekos.life/wallpaper/xQ1Pg5D6J4U.jpg', 'https://cdn.nekos.life/wallpaper/aIMK5Ir4xho.jpg', 'https://cdn.nekos.life/wallpaper/6gneEXrNAWU.jpg', 'https://cdn.nekos.life/wallpaper/PSvNdoISWF8.jpg', 'https://cdn.nekos.life/wallpaper/SjgF2-iOmV8.jpg', 'https://cdn.nekos.life/wallpaper/vU54ikOVY98.jpg', 'https://cdn.nekos.life/wallpaper/QjnfRwkRU-Q.jpg', 'https://cdn.nekos.life/wallpaper/uSKqzz6ZdXc.png', 'https://cdn.nekos.life/wallpaper/AMrcxZOnVBE.jpg', 'https://cdn.nekos.life/wallpaper/N1l8SCMxamE.jpg', 'https://cdn.nekos.life/wallpaper/n2cBaTo-J50.png', 'https://cdn.nekos.life/wallpaper/ZXcaFmpOlLk.jpg', 'https://cdn.nekos.life/wallpaper/7bwxy3elI7o.png', 'https://cdn.nekos.life/wallpaper/7VW4HwF6LcM.jpg', 'https://cdn.nekos.life/wallpaper/YtrPAWul1Ug.png', 'https://cdn.nekos.life/wallpaper/1p4_Mmq95Ro.jpg', 'https://cdn.nekos.life/wallpaper/EY5qz5iebJw.png', 'https://cdn.nekos.life/wallpaper/aVDS6iEAIfw.jpg', 'https://cdn.nekos.life/wallpaper/veg_xpHQfjE.jpg', 'https://cdn.nekos.life/wallpaper/meaSEfeq9QM.png', 'https://cdn.nekos.life/wallpaper/Xa_GtsKsy-s.png', 'https://cdn.nekos.life/wallpaper/6Bx8R6D75eM.png', 'https://cdn.nekos.life/wallpaper/zXOGXH_b8VY.png', 'https://cdn.nekos.life/wallpaper/VQcviMxoQ00.png', 'https://cdn.nekos.life/wallpaper/CJnRl-PKWe8.png', 'https://cdn.nekos.life/wallpaper/zEWYfFL_Ero.png', 'https://cdn.nekos.life/wallpaper/_C9Uc5MPaz4.png', 'https://cdn.nekos.life/wallpaper/zskxNqNXyG0.jpg', 'https://cdn.nekos.life/wallpaper/g7w14PjzzcQ.jpg', 'https://cdn.nekos.life/wallpaper/KavYXR_GRB4.jpg', 'https://cdn.nekos.life/wallpaper/Z_r9WItzJBc.jpg', 'https://cdn.nekos.life/wallpaper/Qps-0JD6834.jpg', 'https://cdn.nekos.life/wallpaper/Ri3CiJIJ6M8.png', 'https://cdn.nekos.life/wallpaper/ArGYIpJwehY.jpg', 'https://cdn.nekos.life/wallpaper/uqYKeYM5h8w.jpg', 'https://cdn.nekos.life/wallpaper/h9cahfuKsRg.jpg', 'https://cdn.nekos.life/wallpaper/iNPWKO8d2a4.jpg', 'https://cdn.nekos.life/wallpaper/j2KoFVhsNig.jpg', 'https://cdn.nekos.life/wallpaper/z5Nc-aS6QJ4.jpg', 'https://cdn.nekos.life/wallpaper/VUFoK8l1qs0.png', 'https://cdn.nekos.life/wallpaper/rQ8eYh5mXN8.png', 'https://cdn.nekos.life/wallpaper/D3NxNISDavQ.png', 'https://cdn.nekos.life/wallpaper/Z_CiozIenrU.jpg', 'https://cdn.nekos.life/wallpaper/np8rpfZflWE.jpg', 'https://cdn.nekos.life/wallpaper/ED-fgS09gik.jpg', 'https://cdn.nekos.life/wallpaper/AB0Cwfs1X2w.jpg', 'https://cdn.nekos.life/wallpaper/DZBcYfHouiI.jpg', 'https://cdn.nekos.life/wallpaper/lC7pB-GRAcQ.png', 'https://cdn.nekos.life/wallpaper/zrI-sBSt2zE.png', 'https://cdn.nekos.life/wallpaper/_RJhylwaCLk.jpg', 'https://cdn.nekos.life/wallpaper/6km5m_GGIuw.png', 'https://cdn.nekos.life/wallpaper/3db40hylKs8.png', 'https://cdn.nekos.life/wallpaper/oggceF06ONQ.jpg', 'https://cdn.nekos.life/wallpaper/ELdH2W5pQGo.jpg', 'https://cdn.nekos.life/wallpaper/Zun_n5pTMRE.png', 'https://cdn.nekos.life/wallpaper/VqhFKG5U15c.png', 'https://cdn.nekos.life/wallpaper/NsMoiW8JZ60.jpg', 'https://cdn.nekos.life/wallpaper/XE4iXbw__Us.png', 'https://cdn.nekos.life/wallpaper/a9yXhS2zbhU.jpg', 'https://cdn.nekos.life/wallpaper/jjnd31_3Ic8.jpg', 'https://cdn.nekos.life/wallpaper/Nxanxa-xO3s.png', 'https://cdn.nekos.life/wallpaper/dBHlPcbuDc4.jpg', 'https://cdn.nekos.life/wallpaper/6wUZIavGVQU.jpg', 'https://cdn.nekos.life/wallpaper/_-Z-0fGflRc.jpg', 'https://cdn.nekos.life/wallpaper/H9OUpIrF4gU.jpg', 'https://cdn.nekos.life/wallpaper/xlRdH3fBMz4.jpg', 'https://cdn.nekos.life/wallpaper/7IzUIeaae9o.jpg', 'https://cdn.nekos.life/wallpaper/FZCVL6PyWq0.jpg', 'https://cdn.nekos.life/wallpaper/5dG-HH6d0yw.png', 'https://cdn.nekos.life/wallpaper/ddxyA37HiwE.png', 'https://cdn.nekos.life/wallpaper/I0oj_jdCD4k.jpg', 'https://cdn.nekos.life/wallpaper/ABchTV97_Ts.png', 'https://cdn.nekos.life/wallpaper/58C37kkq39Y.png', 'https://cdn.nekos.life/wallpaper/HMS5mK7WSGA.jpg', 'https://cdn.nekos.life/wallpaper/1O3Yul9ojS8.jpg', 'https://cdn.nekos.life/wallpaper/hdZI1XsYWYY.jpg', 'https://cdn.nekos.life/wallpaper/h8pAJJnBXZo.png', 'https://cdn.nekos.life/wallpaper/apO9K9JIUp8.jpg', 'https://cdn.nekos.life/wallpaper/p8f8IY_2mwg.jpg', 'https://cdn.nekos.life/wallpaper/HY1WIB2r_cE.jpg', 'https://cdn.nekos.life/wallpaper/u02Y0-AJPL0.jpg', 'https://cdn.nekos.life/wallpaper/jzN74LcnwE8.png', 'https://cdn.nekos.life/wallpaper/IeAXo5nJhjw.jpg', 'https://cdn.nekos.life/wallpaper/7lgPyU5fuLY.jpg', 'https://cdn.nekos.life/wallpaper/f8SkRWzXVxk.png', 'https://cdn.nekos.life/wallpaper/ZmDTpGGeMR8.jpg', 'https://cdn.nekos.life/wallpaper/AMrcxZOnVBE.jpg', 'https://cdn.nekos.life/wallpaper/ZhP-f8Icmjs.jpg', 'https://cdn.nekos.life/wallpaper/7FyUHX3fE2o.jpg', 'https://cdn.nekos.life/wallpaper/CZoSLK-5ng8.png', 'https://cdn.nekos.life/wallpaper/pSNDyxP8l3c.png', 'https://cdn.nekos.life/wallpaper/AhYGHF6Fpck.jpg', 'https://cdn.nekos.life/wallpaper/ic6xRRptRes.jpg', 'https://cdn.nekos.life/wallpaper/89MQq6KaggI.png', 'https://cdn.nekos.life/wallpaper/y1DlFeHHTEE.png']
                     let walnimek = walnime[Math.floor(Math.random() * walnime.length)]
                     iluser.sendFileFromUrl(message.from, walnimek, 'Nimek.jpg', `${mess.iklann}`, message.id)
@@ -6563,11 +6580,14 @@ case prefix+'nulis3':
             fs.writeFileSync('./lib/database/setting.json', JSON.stringify(setting))
             iluser.sendText(message.from, `Berhasil Mengganti Prefix Ke *「* ${prefa} *」*`)
             break */
-        case prefix+'setprefix':
+        case prefix+'setprefix':{
             if(!isOwner) return
             if (args.length === 1) return iluser.reply(from, `Kirim perintah *${prefix}prefix [ NEW PREFIX ]*`, message.id)
             prefix = args[1]
+            setting.prefix = `${prefix}`
+            fs.writeFileSync('./lib/database/setting.json', JSON.stringify(setting))
             iluser.sendText(from, `Berhasil Mengganti Prefix Ke *「* ${prefix} *」*`)
+            }
             break
         case prefix+'bc': // KASIH CREDIT DONG KALO COPAS
             if (!isPilot && !isOwner) return 
@@ -6592,11 +6612,11 @@ case prefix+'nulis3':
                 break
         case prefix+'adminlist':
             if (!isGroupMsg) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nHanya dapat di gunakan di dalam grup', message.id)
-            let mimin = ''
+            let mimin = 'LNeeh adminnya\n'
             for (let admon of groupAdmins) {
                 mimin += `• @${admon.replace(/@c.us/g, '')}\n` 
             }
-            await sleep(2000)
+           // await sleep(2000)
             await iluser.sendTextWithMentions(message.from, mimin)
             break
         case prefix+'ownergroup':
@@ -6616,7 +6636,7 @@ case prefix+'nulis3':
                 hehe += ` @${groupMem[i].id.replace(/@c.us/g, '')}\n`
             }
             hehe += '\nPowered by *_iluser_BOT_*'
-            await sleep(2000)
+            await sleep(1000)
             await iluser.sendTextWithMentions(message.from, hehe, message.id)
             break;
         case prefix+'kickall':
@@ -6663,13 +6683,13 @@ case prefix+'nulis3':
                 if (!quotedMsg) {
                 const newMem = args[1]
                 await iluser.reply(from, `Oke mint. Menambahkan ${newMem} ke grup.`, id)
-                await sleep(3000)
+                await sleep(2000)
                 await iluser.addParticipant(groupId, newMem + '@c.us')
                 console.log(`SUCCESS | Nambah member`)
                 } else {
                     const qmid = quotedMsgObj.sender.id
                     await iluser.reply(from, `Oke mint. Menambahkan ${qmid.replace('@c.us', '')} ke grup.`, id)
-                await sleep(3000)
+                await sleep(2000)
                 await iluser.addParticipant(groupId, qmid)
                 console.log(`SUCCESS | Nambah member`)
                 }
@@ -6682,11 +6702,11 @@ case prefix+'nulis3':
         	if (!isPilot && !isOwner) return
             if (!isGroupMsg) return iluser.reply(message.from, 'Perintah ini hanya bisa di gunakan dalam group', message.id)            
             if (!isBotGroupAdmins) return iluser.reply(message.from, 'Perintah ini hanya bisa di gunakan ketika bot menjadi admin', message.id)
-            if (mentionedJidList.length === 0) return iluser.reply(message.from, `Untuk menggunakan Perintah ini, kirim perintah *${prefix}okick* @tagmember`, message.id)
+            if (mentionedJidList.length === 0) return iluser.reply(message.from, `Salah tuan`, message.id)
             await iluser.sendTextWithMentions(message.from, `Mengeluarkan anak anjing ${mentionedJidList.map(x => `@${x.replace('@c.us', '')}`).join('\n')}`)
             for (let i = 0; i < mentionedJidList.length; i++) {
                 if ((ownerNumber).includes(mentionedJidList[i])) return iluser.reply(message.from, mess.error.Sp, message.id)
-                await sleep(3000)
+                await sleep(2000)
                 await iluser.removeParticipant(groupId, mentionedJidList[i])
             }
             break
@@ -6734,7 +6754,7 @@ case prefix+'nulis3':
                 if (groupAdmins.includes(qmid)) return await iluser.reply(from, 'Target sudah menjadi admin [Already Admin]', id)
                 if (qmid === botNumber) return await iluser.reply(from, 'Mana bisa promote diri sendiri. tol!', id)
                 await iluser.sendTextWithMentions(from, `Oke mint, menambahkan @${qmid.replace('@c.us', '')} sebagai pawang grup.`)
-                await sleep(3000)
+                await sleep(2000)
                 await iluser.promoteParticipant(groupId, qmid)
             }
             break
@@ -6753,7 +6773,7 @@ case prefix+'nulis3':
                 if (!groupAdmins.includes(qmid)) return await iluser.reply(from, 'Target bukan admin [Target not Admin]', id)
             if (qmid === botNumber) return await iluser.reply(from, 'Mana bisa demote diri sendiri. tol!', id)
             await iluser.sendTextWithMentions(from, `Oke mint, menghapus jabatan @${qmid.replace('@c.us', '')}.`)
-            await sleep(3000)
+            await sleep(2000)
             await iluser.demoteParticipant(groupId, qmid)
             }
             break
@@ -6772,7 +6792,7 @@ case prefix+'nulis3':
                     groupLimit = `${gli}`
                     fs.writeFileSync('./lib/database/setting.json', JSON.stringify(setting, null, 2))
                     iluser.reply(message.from, `[ WARN ] setting group limit to *${gli}* . . .`, message.id)
-                    await sleep(3000)
+                    //await sleep(3000)
                     iluser.reply(message.from, `Setting done.`, message.id)
                     break
         case `${prefix}setmemberlimit`:
@@ -6783,7 +6803,7 @@ case prefix+'nulis3':
                     memberLimit = `${gliii}`
                     fs.writeFileSync('./lib/database/setting.json', JSON.stringify(setting, null, 2))
                     iluser.reply(message.from, `[ WARN ] setting member limit to *${gliii}* . . .`, message.id)
-                    await sleep(3000)
+                    sleep(3000)
                     iluser.reply(message.from, `Setting done.`, message.id)
                     break
         case `${prefix}setlimituser`:
@@ -6794,7 +6814,7 @@ case prefix+'nulis3':
                     limitCount = `${glii}`
                     fs.writeFileSync('./lib/database/setting.json', JSON.stringify(setting, null, 2))
                     iluser.reply(message.from, `[ WARN ] setting limit user to ${glii}/day`, message.id)
-                    await sleep(3000)
+                    sleep(3000)
                     iluser.reply(message.from, `Setting done.`, message.id)
                     break
         case `${prefix}mtcstart`:
@@ -6815,7 +6835,7 @@ case prefix+'nulis3':
 			if(isReg(obj)) return         
             if (isLimit(serial)) return
             
-            await sleep(2000)
+            //await sleep(2000)
             await limitAdd(serial)
             fetch('https://raw.githubusercontent.com/ArugaZ/grabbed-results/main/random/faktaunix.txt')
             .then(res => res.text())
@@ -6838,11 +6858,11 @@ case prefix+'nulis3':
                     const mmkkk = `     *TRUTH OR DARE*`
                     const lllk = `Truth or Dare kali ini ditujukan kepada @${gmimk.replace(/@c.us/g, '')} \n\nSilahkan balas pesan ini dengan\n${prefix}truth atau\n${prefix}dare`
                     iluser.sendFileFromUrl(message.from, sliin, 'ddas.jpg', mmkkk, message.id)
-                    await sleep(3000)
+                    //await sleep(3000)
                     await iluser.sendTextWithMentions(message.from, lllk, message.id)
                     break
         case `${prefix}truth`:{
-            await sleep(2000)
+           // await sleep(2000)
             if (!isGroupMsg) return iluser.reply(message.from, 'Perintah ini hanya bisa digunakan dalam grup', message.id)
             const dota = fs.readFileSync('./lib/database/truth.json')
             const dotaJson = JSON.parse(dota)
@@ -6852,7 +6872,7 @@ case prefix+'nulis3':
         }
             break
         case `${prefix}dare`:{
-            await sleep(2000)
+            //await sleep(2000)
             if (!isGroupMsg) return iluser.reply(message.from, 'Perintah ini hanya bisa digunakan dalam grup', message.id)
             const dotaa = fs.readFileSync('./lib/database/dare.json')
             const dotaaJson = JSON.parse(dotaa)
@@ -6886,7 +6906,7 @@ case prefix+'nulis3':
             break
         case `${prefix}adddare`:
             if (!isOwner) return 
-            await sleep(2000)
+            //await sleep(2000)
             const daree = body.slice(9)
             dare.push(daree)
             fs.writeFileSync('./lib/database/dare.json', JSON.stringify(dare))
@@ -6894,7 +6914,7 @@ case prefix+'nulis3':
             break
         case `${prefix}addasupan`:
             if (!isOwner) return 
-            await sleep(2000)
+            //await sleep(2000)
             const asup = body.slice(11)
             tiktok_user.push(asup)
             fs.writeFileSync('./lib/database/usertt.json', JSON.stringify(tiktok_user))
@@ -6903,7 +6923,7 @@ case prefix+'nulis3':
             break
         case `${prefix}listasupan`:
             if (!isOwner) return 
-            await sleep(2000)
+            //await sleep(2000)
             let listasupan = `Lis username tiktok untuk asupan\nTotal : ${tiktok_user.lenght}\n`
             for (let i of tiktok_user) {
             listasupan += `• ${i}\n`
@@ -6930,7 +6950,7 @@ case prefix+'nulis3':
         	if(isReg(obj)) return         
             if (isLimit(serial)) return
             
-            await sleep(2000)
+           // await sleep(2000)
             if (!isGroupMsg) return iluser.reply(message.from, 'Fitur ini hanya bisa di gunakan dalam group', message.id)
             await limitAdd(serial)
                     const gmek = await iluser.getGroupMembersId(groupId)
@@ -6953,7 +6973,7 @@ case prefix+'nulis3':
         	if(isReg(obj)) return         
             if (isLimit(serial)) return
             
-            await sleep(2000)
+           // await sleep(2000)
             if (!isGroupMsg) return iluser.reply(message.from, 'Fitur ini hanya bisa di gunakan dalam group', message.id)
             await limitAdd(serial)
                     const gmekkk = await iluser.getGroupMembersId(groupId)
@@ -7162,7 +7182,7 @@ case prefix+'nulis3':
                     iluser.sendFileFromUrl(message.from, rindKiya, 'asupan.mp4', `${mess.iklann}`, message.id)
                     break
         case prefix+'join':
-            await sleep(3000)
+            await sleep(1000)
             //if (!isOwner) return await iluser.reply(from, 'sorry tod lagi di tutup', id)
             if (!isPremium) return iluser.reply(message.from, '\n⛔ *AKSES DI TOLAK* ⛔\n\nNte premium?', message.id)
             if (isGruplimit(serial)) return iluser.reply(from, `Limit join grup sudah mencapai batas`, id)
@@ -7191,7 +7211,7 @@ case prefix+'nulis3':
             if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?`, message.id)
             if (!quotedMsg) return iluser.reply(message.from, `Salah!!, Contoh: *${prefix}delete [tagpesanbot]*`, message.id)
             if (!quotedMsgObj.fromMe) return iluser.reply(message.from, 'Salah!!, Bot tidak bisa mengahpus chat user lain!', message.id)
-            await sleep(2000)
+            //await sleep(2000)
             iluser.deleteMessage(quotedMsgObj.chatId, quotedMsgObj.id, false)
             break
         case prefix+'sider':
@@ -7226,7 +7246,7 @@ case prefix+'nulis3':
             if (!isBotGroupAdmins) return iluser.reply(message.from, `Fitur ini hanya bisa di gunakan ketika bot menjadi admin`, message.id)
             if (isGroupMsg) {
                 await iluser.revokeGroupInviteLink(groupId);
-                await sleep(2000)
+               // await sleep(2000)
                 iluser.sendTextWithMentions(message.from, `Link group telah direset oleh admin @${sender.id.replace('@c.us', '')}`)
             }
             break
@@ -7258,7 +7278,7 @@ case prefix+'nulis3':
                 if(lmt.id === serial){
                     let limitCounts = limitCount-lmt.limit
                     if(limitCounts <= 0) return iluser.reply(message.from, `Limit penggunaan bot kamu sudah habis.\nMau unlimited limit? upgrade ke premium ae ngab. cek fitur premium di ${prefix}premfitur`, message.id)
-                    await sleep(2000)
+                    //await sleep(2000)
                     await iluser.reply(message.from, `Sisa limit penggunaan bot kamu: *${limitCounts}*`, message.id)
                     found = true
                 }
@@ -7269,7 +7289,7 @@ case prefix+'nulis3':
                 let obj = {id: `${serial}`, limit:1};
                 limit.push(obj);
                 fs.writeFileSync('./lib/database/limit.json',JSON.stringify(limit, 1));
-                await sleep(2000)
+                //await sleep(2000)
                 await iluser.reply(message.from, `Sisa limit penggunaan bot kamu: *${limitCount}*`, message.id)
             }
             break
@@ -7326,7 +7346,7 @@ case prefix+'nulis3':
                 limit.splice(benetc)
                 fs.writeFileSync('./lib/database/limit.json', JSON.stringify(limit))
                 await iluser.reply(from, '*[ WARN ]* Restarting limit user...', id)
-                await sleep(3000)
+                await sleep(2000)
                 await iluser.reply(from, `Restarting limit done`, id)
                 console.log('[INFO] Limit restarted!');
             }
@@ -7347,7 +7367,7 @@ case prefix+'nulis3':
                 let unblock = `${mentionedJidList[i]}`
                 await iluser.contactUnblock(unblock).then((a)=>{
                     console.log(a)
-                    sleep(2000)
+                    sleep(1000)
                     iluser.reply(message.from, `unblocked target`, message.id)
                 })
             } 
@@ -7636,7 +7656,7 @@ break
         case '_register':
         case '_reg':
         case '_daftar':
-            await sleep(2000)
+           // await sleep(2000)
             const nonye = sender.id
             const pporang = await iluser.getProfilePicFromServer(sender.id)
             if (pporang === undefined) {
@@ -7690,7 +7710,7 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
         case prefix+'menu':
         case prefix+'help':
             if(isReg(obj)) return  
-            await sleep(3000)          	
+            //await sleep(3000)          	
             //if(!isOwner) return iluser.reply(message.from, `Halo ${pushname} 👋\n\nMenunya banyak. tapi sengaja di sembunyikan.\nFollow instagram.com/iluser.bot agar kamu dapat info update fitur terkini dari bot`, message.id)
             const pporangg = await iluser.getProfilePicFromServer(sender.id)
             if (pporangg === undefined) {
@@ -7704,14 +7724,14 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
         case prefix+'menuadmin':
         case prefix+'adminmenu':
         	if (!isGroupMsg) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nHanya dapat di gunakan di dalam grup', message.id)
-            await sleep(2000)
+            //await sleep(2000)
         	await iluser.sendImage(message.from, './logo.png', 'iluser.png', menuadmin, message.id)
         	break
 
 
             //NEW FITURE
         case prefix+'ytsearch':
-            if (args.length === 1) return iluser.reply(from, `Kirim perintah *${prefix}ytsearch [ Query ]*, Contoh : #ytsearch alan walker alone`)
+            if (args.length === 1) return iluser.reply(from, `Contoh : #ytsearch alan walker alone`)
             const ytsher = body.slice(10)
             try {
                 const response2 = await fetch(`https://api.vhtear.com/youtube?query=${encodeURIComponent(ytsher)}&apikey=${vhtearkey}`)
@@ -7791,7 +7811,7 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
         	if(isReg(obj)) return
             if (isLimit(serial)) return 
             await limitAdd(serial)
-            if (args.length === 1) return iluser.reply(from, `Kirim perintah *${prefix}playstore [ Query ]*, Contoh : *${prefix}playstore Mobile Legends*`)
+            if (args.length === 1) return iluser.reply(from, `Contoh : *${prefix}playstore Mobile Legends*`)
             const keywotp = body.slice(11)
             try {
                 const dataplai = await axios.get(`https://api.vhtear.com/playstore?query=${keywotp}&apikey=${vhtearkey}`)
@@ -9112,6 +9132,9 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
         case prefix+'wame':
             if(isReg(obj)) return
             iluser.reply(message.from, `Nih ${pushname} nomor wa lu\n\nwa.me/${sender.id.replace(/[@c.us]/g, '')}\n\nAtau\n\napi.whatsapp.com/send?phone=${sender.id.replace(/[@c.us]/g, '')}`, message.id)
+            break
+        case prefix+'me':
+                await iluser.sendVCard(from, `${sender.id}`,'vcard', 'Your Contact', `${sender.id}`, id)
             break
         case prefix+'premium':
         case prefix+'premfitur':
