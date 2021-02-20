@@ -1,7 +1,7 @@
 {
   "name": "iluser",
   "version": "3.0.0",
-  "description": "KNTL",
+  "description": "Powerfull Whatsapp-Bot",
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
@@ -9,7 +9,7 @@
     "postinstall": "node fixWAPI.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
-  "author": "TOBZ",
+  "author": "iluser",
   "license": "Apache-2.0",
   "peerDependencies": {
     "sharp": "^0.27.1"
@@ -20,7 +20,7 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@justalk/pornhub-api": "^3.4.0",
-    "@open-wa/wa-automate": "^3.4.1",
+    "@open-wa/wa-automate": "^3.6.1",
     "@open-wa/wa-decrypt": "^3.0.1",
     "@vitalets/google-translate-api": "^5.0.0",
     "audit": "0.0.6",
@@ -66,6 +66,7 @@
     "node-gtts": "^2.0.2",
     "node-run-cmd": "^1.0.1",
     "node-wav": "0.0.2",
+    "nsfai": "^2.0.0",
     "parse-ms": "^2.1.0",
     "performance-now": "^2.1.0",
     "pm2": "^4.5.0",
@@ -94,7 +95,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TobyG74/ElainaBOT",
+    "url": "git+https://github.com/iluserbot-whatsapp",
     "babel-eslint": "^10.1.0",
     "eslint": "^7.9.0",
     "eslint-config-standard": "^14.1.1",
@@ -107,7 +108,7 @@
     "Whatsapp-Bot"
   ],
   "bugs": {
-    "url": "https://github.com/TobyG74/ElainaBOT/issues"
+    "url": "https://github.com/iluser/iluserbot-whatsapp/issues"
   },
-  "homepage": "https://github.com/TobyG74/ElainaBOT"
+  "homepage": "https://github.com/iluser/iluserbot-whatsapp"
 }
