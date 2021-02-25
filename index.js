@@ -1,4 +1,4 @@
-const { create, Client } = require('@open-wa/wa-automate')
+const { create, ev, Client } = require('@open-wa/wa-automate')
 const welcome = require('./lib/welcome')
 //const left = require('./lib/left')
 const cron = require('node-cron')
@@ -143,7 +143,6 @@ function uncache(module = '.') {
         }
     })
 }
-
 let options = {
   sessionId: 'imperial',
   headless: headless,
@@ -167,38 +166,35 @@ let options = {
     '--disk-cache-size=0'
   ]
 }
-if (!headless) options['defaultViewport'] = null
+/*let options1 = {
+  sessionId: 'iluser',
+  headless: headless,
+  qrRefreshS: 20,
+  qrTimeout: 0,
+  authTimeout: 0,
+  autoRefresh: true,
+  restartOnCrash: start,
+  cacheEnabled: false,
+  // executablePath: execPath,
+  useChrome: true,
+  killProcessOnBrowserClose: false,
+  throwErrorOnTosBlock: true,
+  chromiumArgs: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--aggressive-cache-discard',
+    '--disable-cache',
+    '--disable-application-cache',
+    '--disable-offline-load-stale-cache',
+    '--disk-cache-size=0'
+  ]
+}*/
+//if (!headless) options['defaultViewport'] = null
 
 create(options)
-    .then((iluser) => {
-        start(iluser)
-        // Auto on / off BOT & CMD Limiter => Thanks to ItzNgga - XyZ BOT
-        cron.schedule("0 0 0 * * *", function(){
-            settings.banChats = true
-            fs.writeFileSync('./lib/database/setting.json',JSON.stringify(settings,null,2))
-            iluser.sendText('6283142933894@c.us', 'Waktunya istirahat :)')
-        }, {
-            scheduled: true,
-            timezone: "Asia/Jakarta"
-          });
-      
-        cron.schedule("0 0 6 * * *", function(){
-            settings.banChats = false
-            fs.writeFileSync('./lib/database/setting.json',JSON.stringify(settings,null,2))
-            iluser.sendText('6283142933894@c.us', 'Waktunya Bekerja :)')
-        }, {
-            scheduled: true,
-            timezone: "Asia/Jakarta"
-          });
-        
-        cron.schedule("0 0 6 * * *", function(){
-          let obj = [];
-          fs.writeFileSync('./lib/database/limit.json', JSON.stringify(obj));
-          iluser.sendText('6283142933894@c.us','[INFO] Limit restarted!');
-        }, {
-            scheduled: true,
-            timezone: "Asia/Jakarta"
-          });
-        // Auto on / off BOT & CMD Limiter => Thanks to ItzNgga - XyZ BOT
-    })
+    .then((iluser) => {start(iluser)})
     .catch((error) => console.log(error))
+/*
+create(options1)
+    .then((iluser) => {start(iluser)})
+    .catch((error) => console.log(error))*/
