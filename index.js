@@ -4,7 +4,7 @@ const welcome = require('./lib/welcome')
 const cron = require('node-cron')
 const color = require('./lib/color')
 const fs = require('fs')
-const headless = true
+const headless = false
 // const msgHndlr = require ('./iluser')
 const figlet = require('figlet')
 const lolcatjs = require('lolcatjs')
@@ -16,6 +16,8 @@ require('./lib/help.js')
 nocache('./lib/help.js', module => console.log(`'${module}' Updated!`))
 require('./lib/database/setting.json')
 nocache('./lib/database/setting.json', module => console.log(`'${module}' Updated!`))
+require('./lib/database/premium.json')
+nocache('./lib/database/premium.json', module => console.log(`'${module}' Updated!`))
 
 const settings = JSON.parse(fs.readFileSync('./lib/database/setting.json'))
 const adminNumber = JSON.parse(fs.readFileSync('./lib/database/admin.json'))
@@ -104,11 +106,6 @@ const start = async (iluser = new Client()) => {
             }
         })
 
-        /*iluser.onAck((x => {
-            const { from, to, ack } = x
-            if (x !== 3) iluser.sendSeen(to)
-        }))*/
-
         // listening on Incoming Call
         iluser.onIncomingCall(( async (call) => {
             await iluser.sendText(call.peerJid, 'Maaf, saya tidak bisa menerima panggilan. nelfon = block!.\nJika ingin membuka block harap chat Owner!')
@@ -143,8 +140,9 @@ function uncache(module = '.') {
         }
     })
 }
+
 let options = {
-  sessionId: 'imperial',
+  sessionId: 'ilwan',
   headless: headless,
   qrRefreshS: 20,
   qrTimeout: 0,
@@ -166,7 +164,8 @@ let options = {
     '--disk-cache-size=0'
   ]
 }
-/*let options1 = {
+
+let options1 = {
   sessionId: 'iluser',
   headless: headless,
   qrRefreshS: 20,
@@ -188,13 +187,13 @@ let options = {
     '--disable-offline-load-stale-cache',
     '--disk-cache-size=0'
   ]
-}*/
+} 
 //if (!headless) options['defaultViewport'] = null
 
 create(options)
     .then((iluser) => {start(iluser)})
     .catch((error) => console.log(error))
-/*
+
 create(options1)
     .then((iluser) => {start(iluser)})
-    .catch((error) => console.log(error))*/
+    .catch((error) => console.log(error)) 
