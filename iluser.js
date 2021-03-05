@@ -465,7 +465,7 @@ module.exports = iluser = async (iluser, message) => {
                     level.addLevelingLevel(sender.id, 1, _level)
                     const userLevel = level.getLevelingLevel(sender.id, _level)
                     const fetchXp = 5 * Math.pow(userLevel, 2) + 50 * userLevel + 100
-                    await iluser.reply(from, `Nte naik level tod. Lanjutkan ngebcotnya\n\nKetik ${prefix}level untuk melihat levelmu sekarang`, id)
+                    await iluser.reply(from, `Kamu naik level bacotan ya beb`, id)
                     console.log(color('INFO | User naik level', 'olive'))
 
                 }
@@ -1010,7 +1010,7 @@ function randomName(length) {
         if (isCmd && !isGroupMsg) {console.log(color('[EXEC]', 'yellow'), color(moment(t * 1000).format('DD/MM/YY HH:mm:ss'), 'turquoise'), color(`${command} [${args.length}]`), 'from', color(pushname))}
         if (isCmd && isGroupMsg) {console.log(color('[EXEC]', 'yellow'), color(moment(t * 1000).format('DD/MM/YY HH:mm:ss'), 'turquoise'), color(`${command} [${args.length}]`), 'from', color(pushname), 'in', color(name || formattedTitle))}
         if (isPrf && !isGroupMsg) {
-        	await iluser.reply(message.from, `Hii ${pushname}, Perintah bot menggunakan awalan [ *.* ] 🙂\nSilahkan cek perintah bot yang tersedia di ${prefix}menu`, message.id)
+        	await iluser.reply(message.from, `Hii ${pushname}, Perintah bot menggunakan awalan *.* 🙂\nSilahkan cek perintah bot yang tersedia di ${prefix}menu`, message.id)
         }
         if (isBlocked && isCmd) return iluser.reply(message.from, mess.blockk, message.id)
         if (isBanned && isCmd) return iluser.reply(message.from, mess.bann, message.id)
@@ -1019,23 +1019,32 @@ function randomName(length) {
            await iluser.sendPtt(message.from, `./media/audio/${namfil}.mp3`, message.id)
         }*/
 
-         /*   if (!isCmd && !isGroupMsg && !isPrf && isPremium) {
-            axios.get(`http://simsumi.herokuapp.com/api?text=${encodeURIComponent(message.body)}&lang=id`)
+/*            if (!isCmd && !isGroupMsg && !isPrf && isPremium) {
+            axios.get(`https://lunabot.tech/?query=${encodeURIComponent(message.body)}&lang=id`)
 .then(({data}) => {               
-                iluser.reply(message.from, `${data.success}`, message.id)
+                iluser.reply(message.from, `${data.response}`, message.id)
                 console.log(color('SUCCESS | conversation','olive'))
-                sleep(2000)
+                sleep(2000).then(() => iluser.deleteChat(sender.id))
             })//.then(() => iluser.deleteChat(sender.id))
-} */
-/*
+} 
+
             if (!isCmd && !isGroupMsg && !isPrf && !isPremium) {
             axios.get(`https://lunabot.tech/?query=${encodeURIComponent(message.body)}&lang=id`)
 .then(({data}) => {               
                 iluser.reply(message.from, `${data.response}`, message.id)
                 console.log(color('SUCCESS | conversation','olive'))
-                sleep(2000)
+                sleep(2000).then(() => iluser.deleteChat(sender.id))
             })//.then(() => iluser.deleteChat(sender.id))
-} 
+} */
+
+            if (isCmd && !isGroupMsg && !isOwner) {
+                sleep(1800000).then(() => iluser.deleteChat(sender.id))
+                console.log(color('autodelete message success', 'olive'))
+            } 
+            if (!isCmd && !isGroupMsg && !isOwner) {
+                sleep(1800000).then(() => iluser.deleteChat(sender.id))
+                console.log(color('autodelete message success', 'olive'))
+            } 
 
  /*           if (!isCmd && isPremium  && isGroupMsg && quotedMsgObj.fromMe) {
             axios.get(`http://simsumi.herokuapp.com/api?text=${encodeURIComponent(message.body)}&lang=id`)
@@ -1459,7 +1468,9 @@ function randomName(length) {
                 }
                 await iluser.sendFileFromUrl(message.from, dataplay.items[0].image_cover, `shopee.jpg`, shopeq, message.id)
             } catch (err){
-                console.log(err)
+                console.log(color('FAILED | shopee', 'red'))
+                await iluser.reply(message.from, 'Error!', message.id)
+                iluser.sendText(ownerNumber, 'Shopee Error:\n' + err)
             }
         }
             break
@@ -1482,7 +1493,7 @@ function randomName(length) {
             } catch (err) {
                     console.log(err)
                     await iluser.reply(message.from, 'Error!', message.id)
-                    iluser.sendText(ownerNumber, 'Berita Error : ' + err)
+                    iluser.sendText(ownerNumber, 'newstickerline Error:\n' + err)
             }
         }
             break
@@ -2611,7 +2622,7 @@ console.log(color('SUCCESS | covid indonesia', 'olive'))
                     await iluser.reply(message.from, "Maaf, user tidak ditemukan atau tidak ditemukan video.", message.id)
                 }else{
                     const { videoUrl, webVideoUrl } = getRandomText(collector)
-                    await iluser.sendFileFromUrl(message.from, videoUrl, 'file.mp4', `Hii:) \nTarget!: @${rand}\nUrl: ${webVideoUrl} ${mess.iklan}`, false, { headers: headers }, message.id)
+                    await iluser.sendFileFromUrl(message.from, videoUrl, 'file.mp4', `Hii ${pushname} \nTarget!: @${rand}\nUrl: ${webVideoUrl} ${mess.iklan}`, false, { headers: headers }, message.id)
                 }
             }
         }
@@ -2743,7 +2754,9 @@ Youtube Play Songs By iluser_BOT :)`
                 })
             }
         break */
-        /*case prefix+'play':  
+        /*case prefix+'play':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}play`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return      
             if (isBlocked) return await iluser.reply(message.from, mess.blockk, message.id)
             if (args.length == 1) return iluser.reply(message.from, `Contoh .play hanya rindu - andmesh`, message.id)
@@ -2758,6 +2771,7 @@ Youtube Play Songs By iluser_BOT :)`
                     await iluser.sendFile(message.from, `${rest.data.result}`, `${res.data[0].title}.mp3`, message.id).catch(() => iluser.reply(message.from, mess.error.Yt3, message.id))
                 })
             })
+            }
             break   */
         case prefix+'play':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}play`);
@@ -3210,16 +3224,18 @@ case prefix+'insta':{
                     let spanHref = await page.$eval('div[class="col-12 btn-sfull"] center a', span => span.getAttribute('href'));  
                     await browser.close()
                    // if (!isPremium) return await iluser.sendImage(message.from, './logo.png', 'kntl.png',`*FACEBOOK DOWNLOADER*\n\n${mess.noprem}\n[${spanHref}]`, message.id);
-                    await iluser.sendFileFromUrl( message.from,  spanHref, `inifile.mp4`, `Sukses Download Facebok! ${mess.iklan}`, message.id)
-                    console.log('SUCCESS | Facebook downloader')
+                    await iluser.sendFileFromUrl( message.from,  spanHref, `inifile.mp4`, `${mess.iklann}`, message.id)
+                    console.log(color('SUCCESS | Facebook downloader', 'olive'))
                 } catch (error) {
                     await iluser.reply(message.from, "Maaf, tidak menemukan link download mungkin postingan private.", message.id)
-                    console.log('FAILED | Facebook downloader')
-                    iluser.sendText(ownerNumber, 'Error Facebook: '+ error)
+                    console.log(color('FAILED | Facebook downloader', 'red'))
+                    iluser.sendText(ownerNumber, `Error Facebook downloader:\n${error}`)
                     await browser.close()
                 }
             } catch (error) {
-                console.log(error)
+                await iluser.reply(message.from, "error!", message.id)
+                console.log(color('FAILED | Facebook downloader', 'red'))
+                iluser.sendText(ownerNumber, `Error Facebook downloader:\n${error}`)
             }
         }
         break
@@ -3665,7 +3681,7 @@ case prefix+'insta':{
                     })
                 }
             break
-            case prefix+'wattpad':{
+            case prefix+'wattpad':{ //ILUSER
                 const disable = await getDB.cek_disable(message.from, `${prefix}wattpad`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return       
@@ -3674,7 +3690,6 @@ case prefix+'insta':{
                 const q = body.slice(9)
                 if (!q) return await iluser.reply(message.from, `Yang di cari apa tod?`, message.id)
                 let search = await axios.get('http://api.hurtzcrafter.xyz/wattpad-search?q='+q)
-                //console.log(search.data)
                 await iluser.sendFileFromUrl(message.from, search.data.result[0].thumb, 'watpad.jpg',` *WATTPAD SEARCH*
 
 Gunakan *${prefix}wpred url* untuk membaca
@@ -3702,13 +3717,15 @@ Gunakan *${prefix}wpred url* untuk membaca
 *Judul:* ${search.data.result[5].title}
 *Id:* ${search.data.result[5].id}
 *Url:* ${search.data.result[5].url} ${mess.iklan}`+ '', message.id)
-            .then(() => console.log('SUCCESS | wattpad search'))
+            .then(() => console.log(color('SUCCESS | wattpad search', 'olive')))
                     .catch(async (err) => {
                         console.error(err)
                         await iluser.reply(message.from, 'Error!', message.id)
+                        iluser.sendText(ownerNumber, `error wattpad search:\n${err}`)
+                        console.log(color('FAILED | wattpad search', 'red'))
                     })
                 }
-            break
+                break
            /* case prefix+'wattpad':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}wattpad`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -3732,7 +3749,7 @@ Gunakan *${prefix}wpred url* untuk membaca
                     })
                 }
             break */
-            case prefix+'wpread':{
+            case prefix+'wpread':{//ILUSER
                 const disable = await getDB.cek_disable(message.from, `${prefix}wpread`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return       
@@ -3740,18 +3757,17 @@ Gunakan *${prefix}wpred url* untuk membaca
                 limitAdd(serial)
                 const q = body.slice(8)
                 const wattp = await axios.get('http://api.hurtzcrafter.xyz/wattpad-read?url='+ q +'')
-                //console.log(wattp.data)
-                //console.log(wattp.data)
-                //const trasnlatennya = await translate(wattp.data.result.read_body, 'id')
-            await iluser.reply(message.from, ' *WATTPAD READ*\n\n• Judul : '+ `${wattp.data.result.title}` +'\n• Penulis : '+ `${wattp.data.result.author.name}` +'\n• Halaman Selanjutnya : '+ `${wattp.data.result.next_page_url}` +'\n• Isi : \n'+ `${wattp.data.result.read_body} ${mess.iklan}`+ '', message.id)
-                    .then(() => console.log('SUCCESS | wattpad'))
+                //const trasnlatennya = await translate(wattp.data.result.read_body, 'id') // KALO MAU AKTIFIN AUTO TRANSLATE
+                await iluser.reply(message.from, ' *WATTPAD READ*\n\n• Judul : '+ `${wattp.data.result.title}` +'\n• Penulis : '+ `${wattp.data.result.author.name}` +'\n• Halaman Selanjutnya : '+ `${wattp.data.result.next_page_url}` +'\n• Isi : \n'+ `${wattp.data.result.read_body} ${mess.iklan}`+ '', message.id)
+                    .then(() => console.log(color('SUCCESS | wattpad read', 'olive')))
                     .catch(async (err) => {
                         console.error(err)
                         await iluser.reply(message.from, 'Error!', message.id)
-                        console.log('FAILED | wattpad')
+                        iluser.sendText(ownerNumber, `error wattpad read:\n${err}`)
+                        console.log(color('FAILED | wattpad read', 'red'))
                     })
                 }
-            break
+                break
             case prefix+'cerpen':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}cerpen`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -4449,7 +4465,9 @@ GIFT KUOTA LIMIT*
                                 iluser.reply(message.from, `Nomor tersebut tidak terdaftar di database!`, message.id)
                         }
                 break
-        case prefix+'mediafire':
+        case prefix+'mediafire':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}mediafire`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4458,6 +4476,7 @@ GIFT KUOTA LIMIT*
             iluser.reply(message.from, ` Filename : ${firem.data.filename}\n Deskripsi : ${firem.data.desc}\n Filetype : ${firem.data.filetype}\n Filesize : ${firem.data.filesize}\n diupload pada : ${firem.data.uploaded}`, message.id)
             iluser.sendFileFromUrl(message.from, firem.data.url, firem.data.filename, ' ', 'nih kak', message.id)
             console.log(color('SUCCESS | mediafire', 'olive'))
+            }
             break
         case prefix+'gdrive':{
             const disable = await getDB.cek_disable(message.from, `${prefix}gdrive`);
@@ -4625,10 +4644,11 @@ GIFT KUOTA LIMIT*
             }
         }
             break
-        case prefix+'invert':
+        case prefix+'invert':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}invert`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
-                if (isLimit(serial)) return 
-                
+                if (isLimit(serial)) return
                 await limitAdd(serial)
                 if (isMedia && type === 'image' || isQuotedImage) {
                 const encryptMediaiv = isQuotedImage ? quotedMsg : message
@@ -4645,11 +4665,13 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
+        }
             break
-        case prefix+'invertgrey':
+        case prefix+'invertgrey':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}invertgrey`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
-                if (isLimit(serial)) return 
-                
+                if (isLimit(serial)) return
                 await limitAdd(serial)
                 if (isMedia && type === 'image' || isQuotedImage) {
                 const encryptMediaig = isQuotedImage ? quotedMsg : message
@@ -4666,8 +4688,11 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
+        }
             break
-        case prefix+'brightness':
+        case prefix+'brightness':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}brightness`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return 
                 
@@ -4687,11 +4712,13 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
+        }
             break
-        case prefix+'threshold':
+        case prefix+'threshold':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}threshold`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
-                if (isLimit(serial)) return 
-                
+                if (isLimit(serial)) return
                 await limitAdd(serial)
                 if (isMedia && type === 'image' || isQuotedImage) {
                 const encryptMediath = isQuotedImage ? quotedMsg : message
@@ -4708,8 +4735,11 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
+        }
             break
-        case prefix+'sepia':
+        case prefix+'sepia':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}sepia`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return 
                 
@@ -4729,9 +4759,12 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
-            break
+        }
+        break
         case prefix+'buriq':
-        case prefix+'burik':
+        case prefix+'burik':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}burik`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return 
                 
@@ -4751,8 +4784,11 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
-            break
-        case prefix+'blurfry':
+        }
+        break
+        case prefix+'blurfry':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}blurfry`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return 
                 
@@ -4772,11 +4808,13 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
-            break
-        case prefix+'magik':
+        }
+        break
+        case prefix+'magik':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}magik`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
-                if (isLimit(serial)) return 
-                
+                if (isLimit(serial)) return
                 await limitAdd(serial)
                 if (isMedia && type === 'image' || isQuotedImage) {
                 const encryptMediamk = isQuotedImage ? quotedMsg : message
@@ -4793,11 +4831,13 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
+        }
             break
         case prefix+'captcha':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}captcha`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
-                if (isLimit(serial)) return 
-                
+                if (isLimit(serial)) return
                 await limitAdd(serial)
                 const q = body.slice(9)
                 if (args.length == 1) return await iluser.reply(message.from, 'Format Salah!', message.id)
@@ -4819,6 +4859,8 @@ GIFT KUOTA LIMIT*
         }
             break
         case prefix+'sarah':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}sarah`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4835,6 +4877,8 @@ GIFT KUOTA LIMIT*
                 } 
             break
         case prefix+'cosplay':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}cosplay`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4851,6 +4895,8 @@ GIFT KUOTA LIMIT*
                 }
             break
         case prefix+'trumptwt':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}trumptwt`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4867,6 +4913,8 @@ GIFT KUOTA LIMIT*
                 }
             break
         case prefix+'kanna':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}kanna`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4883,6 +4931,8 @@ GIFT KUOTA LIMIT*
                 }
             break
         case prefix+'silktext':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}silktext`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4899,6 +4949,8 @@ GIFT KUOTA LIMIT*
                 }
             break
         case prefix+'mymind':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}mymind`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4915,6 +4967,8 @@ GIFT KUOTA LIMIT*
                 }
             break
         case prefix+'coffee':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}coffee`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4930,9 +4984,11 @@ GIFT KUOTA LIMIT*
 						iluser.sendText(ownerNumber, 'Error coffee image:\n' + err)
                     })
                 }
-            break
+                break
         case prefix+'kpop':
         case prefix+'k-pop':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}kpop`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4948,6 +5004,8 @@ GIFT KUOTA LIMIT*
                 }
             break
         case prefix+'ukir':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}ukir`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4963,8 +5021,10 @@ GIFT KUOTA LIMIT*
 						iluser.sendText(ownerNumber, 'Error ukir image:\n' + err)
                     })
                 }
-            break
+                break
         case prefix+'smoketext':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}smoketext`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
             limitAdd(serial)
@@ -4980,12 +5040,13 @@ GIFT KUOTA LIMIT*
 						iluser.sendText(ownerNumber, 'Error smoketext image:\n' + err)
                     })
                 }
-            break
+                break
 
             case prefix+'film':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}film`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return 
-                
                 await limitAdd(serial)
                 if (args.lenght === 1) return iluser.reply(message.from, 'Masukkan nama filmnya tol', message.id)
                 const animdl = body.slice(6)
@@ -4996,7 +5057,7 @@ GIFT KUOTA LIMIT*
                 await iluser.sendFileFromUrl(message.from, thumb, 'animedl.jpg', `*FILM DITEMUKAN !*\n➤ Judul: ${title}\n➤ Sinopsis: ${sinopsis}\n➤ Rating: ${rating}\n➤ Link Download: ${video} ${mess.iklan}`, message.id)
             	console.log(color('SUCCESS | film', 'olive'))   
             }
-             break
+            break
         
         case prefix+'banchat':
             if (setting.banChats === true) return
@@ -5016,7 +5077,11 @@ GIFT KUOTA LIMIT*
             console.log(`Global chat has been enabled! ${name}!`)
             break
         case prefix+'goreng':{
-    if(isReg(obj)) return
+            const disable = await getDB.cek_disable(message.from, `${prefix}goreng`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
+                if(isReg(obj)) return
+                if (isLimit(serial)) return 
+                await limitAdd(serial)
     if (isImage || isQuotedImage) {
     try{
         await iluser.reply(message.from,'Sedang menggoreng gambar (4 kali)', message.id)
@@ -5081,8 +5146,10 @@ GIFT KUOTA LIMIT*
     }
     }
         break
-        case prefix+'takestick': // By: VideFrelan
-        case prefix+'take':
+        case prefix+'takestick':
+        case prefix+'take':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}take`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                     if (isLimit(serial)) return 
                     if (!isPremium) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nNte Premium?', message.id)
@@ -5114,8 +5181,11 @@ GIFT KUOTA LIMIT*
                 } else {
                     await iluser.reply(message.from, `wrong format!`, message.id)
                 }
+            }
             break
-        case prefix+'tovid':{ // By: Chika
+        case prefix+'tovid':{
+                    const disable = await getDB.cek_disable(message.from, `${prefix}tovid`);
+                    if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                     if(isReg(obj)) return
                     if (isLimit(serial)) return
                     if (!isPremium) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nNte Premium?', message.id)
@@ -5128,7 +5198,9 @@ GIFT KUOTA LIMIT*
                     }
                 }
                 break
-       case prefix+'takevid':{ // By: Chika
+       case prefix+'takevid':{
+                    const disable = await getDB.cek_disable(message.from, `${prefix}takevid`);
+                    if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                     if(isReg(obj)) return
                     if (isLimit(serial)) return
                     if (!isPremium) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nNte Premium?', message.id)
@@ -5146,7 +5218,7 @@ GIFT KUOTA LIMIT*
                     }
                 }
                 break
-        case 'take':{// By: Chika
+        case 'take':{
                     if (quotedMsg && quotedMsg.type == 'sticker') {
                         const mediaDataTake = await decryptMedia(quotedMsg)
                         const take = body.slice(5)
@@ -5160,10 +5232,11 @@ GIFT KUOTA LIMIT*
                     }
                 }
             break
-        case prefix+'nobg':
+        case prefix+'nobg':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}nobg`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
-                    if (isLimit(serial)) return 
-                    
+                    if (isLimit(serial)) return
                     await limitAdd(serial)
                 if (isMedia && type === 'image' || isQuotedImage){
                     const encryptMedi = isQuotedImage ? quotedMsg : message
@@ -5173,14 +5246,16 @@ GIFT KUOTA LIMIT*
                    await iluser.sendStickerfromUrl(message.from, nobgg.data.result.image  ,'',  'Ini kak' , message.id)
                     console.log('Succes sending Sticker ')
                 }
-                break// kalo bisa ubah resize di fetchernya biar pas stickernya
+            }
+            break
         case prefix+'sticker':
         case prefix+'setiker':
         case prefix+'stiker': 
-        case prefix+'sk':
+        case prefix+'sk':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}stiker`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
                 if (isMedia && isImage || isQuotedImage) {
                     const encryptMedia = isQuotedImage ? quotedMsg : message
@@ -5218,6 +5293,7 @@ GIFT KUOTA LIMIT*
                     } else {
                         await iluser.reply(message.from, `kirim atau balas gambar dengan caption ${prefix}stiker ya tod!!!`, message.id)
                     }
+                }
             break
         /* case prefix+'sticker':
         case prefix+'stiker':
@@ -5237,7 +5313,9 @@ GIFT KUOTA LIMIT*
        // iluser.reply(message.from, `${mess.iklann}`, message.id)
     } else iluser.reply(message.from, mess.error.St, message.id)
 		break */
-        case prefix+'springflow':
+        case prefix+'springflow':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}springflow`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return
                 if (isMedia && type === 'image') {
@@ -5250,8 +5328,11 @@ GIFT KUOTA LIMIT*
                 } else {
                 await iluser.reply(message.from, 'Wrong Format!', message.id)
                 }
-                break
-        case prefix+'watersplash':
+            }
+            break
+        case prefix+'watersplash':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}watersplash`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return 
                 if (isMedia && type === 'image') {
@@ -5264,8 +5345,11 @@ GIFT KUOTA LIMIT*
                 } else {
                 await iluser.reply(message.from, 'Wrong Format!', message.id)
                 }
-                break
-        case prefix+'sketch':
+            }
+            break
+        case prefix+'sketch':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}sketch`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return
                 if (isMedia && type === 'image') {
@@ -5284,8 +5368,11 @@ GIFT KUOTA LIMIT*
                     }else {
                     await iluser.reply(message.from, `Wrong Format!`, message.id)
                 }
-                break
-        case prefix+'cloudy':
+            }
+            break
+        case prefix+'cloudy':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}cloudy`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if(isReg(obj)) return
                 if (isLimit(serial)) return 
                 if (isMedia && type === 'image') {
@@ -5299,8 +5386,11 @@ GIFT KUOTA LIMIT*
                 } else {
                 await iluser.reply(message.from, 'Wrong Format!', message.id)
                 }
-                break
-        case prefix+'wasted':
+            }
+            break
+        case prefix+'wasted':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}wasted`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if (isMedia && type === 'image' || isQuotedImage) {
                 const encryptMediaWt = isQuotedImage ? quotedMsg : message
                 const dataPotoWt = await decryptMedia(encryptMediaWt, uaOverride)
@@ -5313,8 +5403,11 @@ GIFT KUOTA LIMIT*
             } else {
                 await iluser.reply(message.from, `Format Salah!`, message.id)
             }
-            break
-        case prefix+'kiss':
+        }
+        break
+        case prefix+'kiss':{
+                const disable = await getDB.cek_disable(message.from, `${prefix}kiss`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 try {
                     if (isMedia && isImage) {
                         const ppRaw = await iluser.getProfilePicFromServer(sender.id)
@@ -5351,6 +5444,7 @@ GIFT KUOTA LIMIT*
                     console.error(err)
                     await iluser.reply(message.from, 'Error!', message.id)
                 }
+            }
             break
         case prefix+'groupinfo' :
             if(isReg(obj)) return
@@ -5385,14 +5479,19 @@ GIFT KUOTA LIMIT*
 ${desc}`)
             break
         case prefix+'quote':
-        case prefix+'quotes':
+        case prefix+'quotes':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}quotes`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             await limitAdd(serial)
             const quotes = await axios.get('https://tobz-api.herokuapp.com/api/randomquotes?apikey='+tobzkey)
             iluser.reply(message.from, `${quotes.data.quotes}\n\n- ${quotes.data.author}`, message.id)
+            }
             break;
-        case prefix+'koin':
+        case prefix+'koin':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}koin`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             
@@ -5405,8 +5504,11 @@ ${desc}`)
               await iluser.sendStickerfromUrl(message.from, 'https://i.ibb.co/bLsRM2P/2003-indonesia-500-rupiah-copy-1.png', { method: 'get' })
              // await iluser.reply(message.from, `${mess.iklann}`, message.id)
             }
-            break
-        case prefix+'dadu':
+        }
+        break
+        case prefix+'dadu':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}dadu`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             
@@ -5414,6 +5516,7 @@ ${desc}`)
             const dice = Math.floor(Math.random() * 6) + 1
             await iluser.sendStickerfromUrl(message.from, 'https://www.random.org/dice/dice' + dice + '.png', { method: 'get' })
             //await iluser.reply(message.from, `${mess.iklann}`, message.id)
+            }
             break
         case prefix+'ownerbot':
         case prefix+'owner':
@@ -5421,30 +5524,6 @@ ${desc}`)
         case '#owner':
             await iluser.sendTextWithMentions(message.from, `My master @${ownerNumber}`, message.id)
             //iluser.reply(message.from, 'Silahkan hubungi creator bot dengan cara yang sopan dan langsung ke poin pembahasan', message.id)
-            break
-        case prefix+'resetsticker':
-            if(isReg(obj)) return
-            if (!isPremium) return iluser.reply(message.from, `Maaf, perintah ini hanya dapat dilakukan oleh user premium`, message.id)
-            if (!args.length === 1) return iluser.reply(message.from, `Masukkan nomornya, *GUNAKAN AWALAN 62*\ncontoh: ${prefix}resetsticker 62852262236155 / ${prefix}resetsticker @member`, message.id) 
-            const nomebr = args[1]
-            let textz = nomebr.replace(/[-\s+@c.us]/g,'')
-            const cuss = textz + '@c.us'
-                var found = false
-                Object.keys(stickerspam).forEach((i) => {
-                    if(stickerspam[i].id == cuss){
-                        found = i
-                    }
-                })
-                if (found !== false) {
-                    stickerspam[found].msg = 1;
-                    const result = 'DB Sticker Spam has been reset'
-                    console.log(stickerspam[found])
-                    fs.writeFileSync('./lib/database/stickerspam.json',JSON.stringify(stickerspam));
-                    iluser.reply(message.from, result, from)
-                    limitAdd(serial)
-                } else {
-                        iluser.reply(message.from, `Maaf, Nomor itu tidak terdaftar di database!`, message.id)
-                }
             break
         case prefix+'resetbadword':
             if(isReg(obj)) return
@@ -5634,7 +5713,9 @@ ${desc}`)
                 iluser.reply(message.from, `Pilih enable atau disable udin!`, message.id)
             } 
             break   
-          case `${prefix}stylewriting`:
+          case `${prefix}stylewriting`:{
+            const disable = await getDB.cek_disable(message.from, `${prefix}stylewriting`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
           	if(isReg(obj)) return
             if (isLimit(serial)) return 
             
@@ -5654,6 +5735,7 @@ ${desc}`)
             await iluser.reply(message.from, 'Error!', message.id)
             iluser.sendText(ownerNumber, 'Sand Writing Error : ' + err)
               }
+            }
             break
 
         case prefix+'info-lock':
@@ -5736,19 +5818,20 @@ ${desc}`)
                 await iluser.sendImage(message.from, nhsh2[i].data, 'thumbserc.jpg', `${mess.iklann}`, message.id)
                 }
             break
-        case prefix+'loli':
+        case prefix+'loli':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}loli`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const loli = await axios.get(`https://api.vhtear.com/randomloli&apikey=${vhtearkey}`)
             const loly = loli.data.result
             iluser.sendFileFromUrl(message.from, loly.result, 'loli.jpeg', `${mess.iklann}`, message.id)
+            }
             break
         case prefix+'shota':
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const imageToBase64 = require('image-to-base64')
             var shouta = ['shota anime','anime shota'];
@@ -5772,11 +5855,12 @@ ${desc}`)
             })
             break
         case prefix+'cewe':
-        case prefix+'ptl':
+        case prefix+'ptl':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}cewe`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             await limitAdd(serial)
-            {
             var ptrss = ['cewe cantik','cewe jepang','cewe korea','model cantik'];
             var ptrsqq = ptrss[Math.floor(Math.random() * ptrss.length)];
             const ptrst = await fetch(`https://api.vhtear.com/pinterest?query=${ptrsqq}&apikey=${vhtearkey}`)
@@ -5790,13 +5874,14 @@ ${desc}`)
             await iluser.sendImage(message.from, base64, 'ptrs.jpg', `${mess.iklann}`, message.id)
             await limitAdd(serial)
         }
-            break
+        break
         case prefix+'cowo':
-        case prefix+'ptl2':
+        case prefix+'ptl2':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}cowo`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             await limitAdd(serial)
-            {
             var ptrss = ['cowo ganteng','cogan','model cowo','model ganteng'];
             var ptrsqq = ptrss[Math.floor(Math.random() * ptrss.length)];
             const ptrst = await fetch(`https://api.vhtear.com/pinterest?query=${ptrsqq}&apikey=${vhtearkey}`)
@@ -5810,66 +5895,13 @@ ${desc}`)
             await iluser.sendImage(message.from, base64, 'ptrs.jpg', `${mess.iklann}`, message.id)
             await limitAdd(serial)
         }
-            break
-        case prefix+'ptl':
-        case prefix+'cewe':
-            if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
-            await limitAdd(serial)
-            const imageToBase64a = require('image-to-base64')
-            var peteel = ['eimi fukada','japanese woman','korean girl','asian girl','rusian girls','beauty girl','muslim girl','haruna kawaguchi','yuki araki'];
-            var peteele = peteel[Math.floor(Math.random() * peteel.length)];
-            var urlshote = `https://api.vhtear.com/pinterest?query=${peteele}&apikey=${vhtearkey}`
-            
-            axios.get(urlshote)
-            .then((result) => {
-            var peteelz = JSON.parse(JSON.stringify(result.data));
-            var peteela =  peteelz[Math.floor(Math.random() * peteelz.length)];
-            imageToBase64a(peteela)
-            .then(
-                (response) => {
-            let imge = 'data:image/jpeg;base64,'+response
-            iluser.sendFile(message.from, imge, "peteel.jpg", `${mess.iklann}`, message.id)
-                    }) 
-                .catch(
-                    (error) => {
-                        console.log(error);
-                    })
-            })
-            break
-        case prefix+'ptl2':
-        case prefix+'cowo':
-            if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
-            await limitAdd(serial)
-            const imageToBase64ab = require('image-to-base64')
-            var cogan = ['korean boy','japanese boy','model boy','asian boy','rusian boy','chinese boy','muslim boy'];
-            var cogana = cogan[Math.floor(Math.random() * cogan.length)];
-            var urlcogan = "https://api.fdci.se/rep.php?gambar=" + cogana;
-            
-            axios.get(urlcogan)
-            .then((result) => {
-            var coganb = JSON.parse(JSON.stringify(result.data));
-            var coganc =  coganb[Math.floor(Math.random() * coganb.length)];
-            imageToBase64ab(coganc)
-            .then(
-                (response) => {
-            let imgee = 'data:image/jpeg;base64,'+response
-            iluser.sendFile(message.from, imgee, "peteel.jpg", `${mess.iklann}`, message.id)
-                    }) 
-                .catch(
-                    (error) => {
-                        console.log(error);
-                    })
-            })
-            break
+        break
         case prefix+'wall':
-        case prefix+'wallpaper':
+        case prefix+'wallpaper':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}wall`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const imageToBase64abc = require('image-to-base64')
             var walla = ['abstract wallpaper','cinematic wallpaper','dark wallpaper','mountain wallpaper','galaxy wallpaper','wallpaper city','space wallpaper','nature wallpaper','dark wallpaper'];
@@ -5891,30 +5923,36 @@ ${desc}`)
                         console.log(error);
                     })
             })
+        }
             break
-        case prefix+'waifu':
+        case prefix+'waifu':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}waifu`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const waifu = await axios.get('https://tobz-api.herokuapp.com/api/waifu?apikey=' + tobzkey)
             iluser.sendFileFromUrl(message.from, waifu.data.image, 'Waifu.jpg', `• Name : ${waifu.data.name}\n• Description : ${waifu.data.desc}\n\n• Source : ${waifu.data.source} ${mess.iklan}`, message.id)
+            }
             break
-        case prefix+'husbu':
+        case prefix+'husbu':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}husbu`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const diti = fs.readFileSync('./lib/database/husbu.json')
             const ditiJsin = JSON.parse(diti)
             const rindIndix = Math.floor(Math.random() * ditiJsin.length)
             const rindKiy = ditiJsin[rindIndix]
             iluser.sendFileFromUrl(message.from, rindKiy.image, 'Husbu.jpg', `${rindKiy.teks} ${mess.iklan}`, message.id)
+            }
             break
-        case prefix+'randomnekonime':
+        case prefix+'randomnekonime':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomnekonime`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const nekonime = await axios.get(`https://tobz-api.herokuapp.com/api/nekonime?apikey=`+tobzkey)
             const nekon = nekonime.data
@@ -5924,12 +5962,13 @@ ${desc}`)
                 var ext = '.jpg'
             }
             iluser.sendFileFromUrl(message.from, nekon.result, `Nekonime${ext}`, `${mess.iklann}`, message.id)
+            }
             break
-        case prefix+'randomtrapnime':
+        case prefix+'randomtrapnime':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomtrapnime`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (!isGroupMsg) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nHanya dapat di gunakan di dalam grup', message.id)
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const trapnime = await axios.get('https://tobz-api.herokuapp.com/api/nsfwtrap?apikey='+tobzkey)
             const trapn = trapnime.data.result
@@ -5939,8 +5978,11 @@ ${desc}`)
                 var ext = '.jpg'
             }
             iluser.sendImage(message.from, trapn.result, `trapnime${ext}`, `${mess.iklann}`, message.id)
+            }
             break
-        case prefix+'randomhentai':
+        case prefix+'randomhentai':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomhentai`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             if (!isPremium) return await iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte Premium?`, message.id);
@@ -5953,8 +5995,11 @@ ${desc}`)
                 var ext = '.jpg'
             }
             iluser.sendImage(message.from, henta.result, `RandomHentai${ext}`, `${mess.iklann}`, message.id)
+            }
             break
-        case prefix+'randomnsfwneko':
+        case prefix+'randomnsfwneko':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomnsfwneko`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             if (!isPremium) return await iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte Premium?`, message.id);
@@ -5967,11 +6012,13 @@ ${desc}`)
                 var ext = '.jpg'
             }
             iluser.sendImage(message.from, nsfwn.result, `NsfwNeko${ext}`, `${mess.iklann}`, message.id)
+            }
             break
-        case prefix+'randomanime':
+        case prefix+'randomanime':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomanime`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const ranime = await axios.get('https://tobz-api.herokuapp.com/api/randomanime?apikey='+tobzkey)
             const ranimen = ranime.data
@@ -5981,36 +6028,47 @@ ${desc}`)
                 var ext = '.jpg'
             }
             iluser.sendFileFromUrl(message.from, ranimen.result, `RandomAnime${ext}`, `${mess.iklann}`, message.id)
+            }
             break    
-        case prefix+'randomhug':
+        case prefix+'randomhug':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomhug`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const shug = await axios.get('https://tobz-api.herokuapp.com/api/hug?apikey='+tobzkey)
             const rhug = shug.data
             iluser.sendFileFromUrl(message.from, rhug.result, `RandomHug${ext}`, `${mess.iklann}`, message.id)
+            }
             break
-        case prefix+'randomcry':
+        case prefix+'randomcry':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomcry`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const scry = await axios.get('https://tobz-api.herokuapp.com/api/cry?apikey='+tobzkey)
             const rcry = scry.data
             iluser.sendFileFromUrl(message.from, rcry.result, `RandomCry${ext}`, `${mess.iklann}`, message.id)
+            }
             break
-        case prefix+'randomkiss':
+        case prefix+'randomkiss':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}randomkiss`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const skiss = await axios.get('https://tobz-api.herokuapp.com/api/kiss?apikey='+tobzkey)
             const rkiss = skiss.data
             iluser.sendFileFromUrl(message.from, rkiss.result, `RandomKiss${ext}`, `${mess.iklann}`, message.id)
+            }
             break
-        case prefix+'subreddit':
+        case prefix+'subreddit':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}subreddit`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
+            if (isLimit(serial)) return
+            await limitAdd(serial)
             argz = body.trim().split(' ')
             const sr = arg[1]
             try {
@@ -6020,8 +6078,12 @@ ${desc}`)
             } catch(err) {
                 await iluser.reply(message.from, 'Error!', message.id)
             }
-            break
+        }
+        break
         case prefix+'nhder':
+        case prefix+'hnder':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}nhder`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if (isReg(obj)) return
             if (isLimit(serial)) return 
             if (!isPremium && !isOwner) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nNte premium?', message.id)
@@ -6039,36 +6101,46 @@ ${desc}`)
             } else {
                 iluser.sendText(message.from, 'masukan code nuclear', message.id)
             }
-            break
-        case prefix+'quotesnime':
+        }
+        break
+        case prefix+'quotesnime':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}quotesnime`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
             const skya = await axios.get('https://tobz-api.herokuapp.com/api/quotesnime/random?apikey='+tobzkey)
             skya_ = skya.data
             iluser.reply(message.from, `• *Quotes* : ${skya_.quote}\n• *Character* : ${skya_.character}\n• *Anime* : ${skya_.anime}`, message.id)
+            }
             break
-        case prefix+'meme':
+        case prefix+'meme':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}meme`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             const response = await axios.get('https://meme-api.herokuapp.com/gimme/indonesia')
             const { postlink, title, subreddit, url, nsfw, spoiler } = response.data
             iluser.sendFileFromUrl(message.from, `${url}`, 'meme.jpg', `${title} ${mess.iklan}`, message.id)
             await limitAdd(serial)
+            }
             break      
-        case prefix+'memeindo':
+        case prefix+'memeindo':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}memeindo`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             const memejoke = await axios.get(`https://api.zeks.xyz/api/memeindo?apikey=apivinz`)
             const memejokes = memejoke.data
             await limitAdd(serial)
             iluser.sendImage(message.from, memejokes.result, 'iluser.jpg', `${mess.iklann}`, message.id)
+            }
             break  
-        case prefix+'quoteanime':
+        case prefix+'quoteanime':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}quoteanime`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
+            if (isLimit(serial)) return
             await limitAdd(serial)
                         if(args[1]){
                             if(args[1] === 'anime'){
@@ -6105,8 +6177,11 @@ ${desc}`)
                                 console.log(err)
                             })
                         }
-            break
-        case prefix+'malanime':
+                    }
+                    break
+        case prefix+'malanime':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}malanime`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             
@@ -6137,8 +6212,11 @@ ${desc}`)
              console.error(err.message)
              await iluser.reply(message.from, 'Error!', message.id)
            }
-          break
-        case prefix+'malcharacter':
+       }
+        break
+        case prefix+'malcharacter':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}malcharacter`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
             
@@ -6167,34 +6245,8 @@ ${desc}`)
              console.error(err.message)
              await iluser.reply(message.from, 'Error!', message.id)
            }
-          break
-        // MEDIA //
-        case prefix+'cnnindo':
-            try {
-                const res = await axios.get('https://news.developeridn.com/nasional')
-                let news = 'Berita Hari Ini'
-                for (let i = 0; i < res.data.data.length - 16; i++) {
-                    news += `\n\n=========================\n\n*Judul:* ${res.data.data[i].judul}\n\n*Link:* ${res.data.data[i].link}\n\n*Waktu:* ${res.data.data[i].waktu}\n`
-                }
-                await iluser.sendFileFromUrl(message.from, res.data.data[0].poster, '', `${news}\n\nLooking For Detail of News?\nType ${prefix}cnndetail <link_berita>`, message.id)
-            } catch(err) {
-                console.error(err)
-                await iluser.reply(message.from, `Error: ${err.message}`)
-            }
-            break
-        case prefix+'cnnworld':
-            try {
-                const res = await axios.get(`https://news.developeridn.com/internasional`)
-                let news = ''
-                for (let i = 0; i < res.data.data.length - 16; i++) {
-                    news += `\n\n=========================\n\n*Judul:* ${res.data.data[i].judul}\n\nLink: ${res.data.data[i].link}\n\n*Waktu:* ${res.data.data[i].waktu}\n`
-                }
-                await iluser.sendFileFromUrl(message.from, res.data.data[0].poster, '', `${news}\nLooking For Detail of News? Type ${prefix}cnndetail <link_berita>`, message.id)
-            } catch(err) {
-                console.error(err)
-                await iluser.reply(from `Error: ${err.message}`, message.id)
-            }
-            break
+       }
+        break
         case prefix+'infogempa':
             if(isReg(obj)) return
             if (isLimit(serial)) return 
@@ -8053,7 +8105,7 @@ case prefix+'yt': {
             if (args.length === 1) return iluser.reply(message.from, 'Contoh .join https://chat.whatsapp.com/xnxx', message.id)
             const link = body.slice(6)
             const tGr = await iluser.getAllGroups()
-            const minMem = 10
+            const minMem = 2
             const isLink = link.match(/(https:\/\/chat.whatsapp.com)/gi)
             const check = await iluser.inviteInfo(link)
             if (!isLink) return iluser.reply(message.from, 'Ini link? 👊🤬', message.id)
@@ -8288,7 +8340,7 @@ case prefix+'yt': {
             }
             break
         case prefix+'unban':
-        	if (!isPilot && !isOwner) return 
+        	if (!isOwner) return 
                 let inz = banned.indexOf(mentionedJidList[0])
                 banned.splice(inz, 1)
                 fs.writeFileSync('./lib/database/banned.json', JSON.stringify(banned))
@@ -8612,6 +8664,51 @@ case prefix+'simi':{
   break
 
             //NEW FITURE
+        case prefix+'warn':{
+            if (!isGroupMsg) return iluser.reply(message.from, `Fitur ini hanya bisa di gunakan dalam group`, message.id)
+            if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?`, message.id)
+            if (!isBotGroupAdmins) return iluser.reply(message.from, `Fitur ini hanya bisa di gunakan ketika bot menjadi admin`, message.id)
+        try {
+            const target = message.quotedMsgObj.author;
+            var targett = target.match(/\d+/g);
+            const cek = await getDB.warn(message.from, target);
+            if (cek == undefined) {
+              await getDB.add_warn(message.from, target);
+              iluser.sendTextWithMentions(message.from, `Pengguna @${targett} memiliki 1/3 peringatan, hati-hati!`, message.id);
+              console.log(`SUCCESS | warn member`);
+            }else if (cek.jumlah == 2){
+              iluser.sendTextWithMentions(message.from, `Peringatan 3/3, @${targett} sekarang dikeluarkan!`, message.id);
+              iluser.removeParticipant(message.from, target);
+              console.log(`SUCCESS | kick member warn`);
+              await getDB.del_warn(message.from, target);
+            }else if (cek.jumlah != undefined) {
+              await getDB.update_warn(message.from, target);
+              iluser.sendTextWithMentions(message.from, `Pengguna @${targett} memiliki ${cek.jumlah + 1}/3 peringatan, hati-hati!`, message.id);
+              console.log(`SUCCESS | warn member`);    
+              }    
+        }catch(err){
+      console.log(err);
+      iluser.sendText(message.from, `Sepertinya ada yang salah.`);
+    }
+    }
+    break
+        case prefix+'delwarn':{
+            if (!isGroupMsg) return iluser.reply(message.from, `Fitur ini hanya bisa di gunakan dalam group`, message.id)
+            if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nNte admin?`, message.id)
+            if (!isBotGroupAdmins) return iluser.reply(message.from, `Fitur ini hanya bisa di gunakan ketika bot menjadi admin`, message.id)
+        try {
+            const target = message.quotedMsgObj.author;
+            var targett = target.match(/\d+/g);
+            await getDB.del_warn(message.from, target);
+            await getDB.del_warn_badword(message.from, target);
+            iluser.sendTextWithMentions(message.from, `Peringatan untuk @${targett} telah dihapus`, message.id);
+            console.log(`SUCCESS | delete warn member`)
+        }catch(err){
+      console.log(err);
+      iluser.sendText(message.from, `Sepertinya ada yang salah.`);
+    }
+    }
+    break
         case prefix+'imgtopdf':{
             if(isReg(obj)) return
             if (isLimit(serial)) return 
