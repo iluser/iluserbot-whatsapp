@@ -2,15 +2,15 @@
   "limitCount": "25",
   "gruplimitCount": "100",
   "memberLimit": "258",
-  "groupLimit": "@628881383239 30",
+  "groupLimit": "123",
   "barbarkey": "Marselhasagi",
   "vhtearkey": "chika-iluser-not",
   "melodickey": "administrator",
   "prefix": ".",
   "tobzkey": "BotWeA",
   "mtc": false,
-  "restartState": false,
-  "restartId": "undefined",
+  "restartState": true,
+  "restartId": "6283142933894-1611879057@g.us",
   "banChats": false,
   "Rest": true
 }
