@@ -4,7 +4,7 @@ const welcome = require('./lib/welcome')
 const cron = require('node-cron')
 const color = require('./lib/color')
 const fs = require('fs')
-const headless = false
+const headless = true
 // const msgHndlr = require ('./iluser')
 const figlet = require('figlet')
 const lolcatjs = require('lolcatjs')
@@ -165,7 +165,7 @@ let options = {
   ]
 }
 
-let options1 = {
+/*let options1 = {
   sessionId: 'iluser',
   headless: headless,
   qrRefreshS: 20,
@@ -187,13 +187,13 @@ let options1 = {
     '--disable-offline-load-stale-cache',
     '--disk-cache-size=0'
   ]
-} 
+} */
 //if (!headless) options['defaultViewport'] = null
 
 create(options)
     .then((iluser) => {start(iluser)})
     .catch((error) => console.log(error))
 
-create(options1)
+/*create(options1)
     .then((iluser) => {start(iluser)})
-    .catch((error) => console.log(error)) 
+    .catch((error) => console.log(error)) */
