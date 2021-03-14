@@ -23,6 +23,7 @@
     "@open-wa/wa-automate": "^3.9.1",
     "@open-wa/wa-decrypt": "^3.0.1",
     "@vitalets/google-translate-api": "^5.0.0",
+    "acrcloud": "^1.4.0",
     "audit": "0.0.6",
     "await-exec": "^0.1.2",
     "axios": "^0.21.1",

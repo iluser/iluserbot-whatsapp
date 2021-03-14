@@ -152,6 +152,7 @@ let options = {
   cacheEnabled: false,
   // executablePath: execPath,
   useChrome: true,
+  stickerServerEndpoint: false,
   killProcessOnBrowserClose: false,
   throwErrorOnTosBlock: true,
   chromiumArgs: [
@@ -176,6 +177,7 @@ let options = {
   cacheEnabled: false,
   // executablePath: execPath,
   useChrome: true,
+  stickerServerEndpoint: false,
   killProcessOnBrowserClose: false,
   throwErrorOnTosBlock: true,
   chromiumArgs: [
