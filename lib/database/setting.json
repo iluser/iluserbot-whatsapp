@@ -1,10 +1,10 @@
 {
-  "limitCount": "20",
+  "limitCount": "15",
   "gruplimitCount": "100",
-  "memberLimit": "258",
+  "memberLimit": "155",
   "groupLimit": "123",
   "barbarkey": "Marselhasagi",
-  "vhtearkey": "chika-iluser-not",
+  "vhtearkey": "chika-not-iluser",
   "melodickey": "administrator",
   "prefix": ".",
   "tobzkey": "BotWeA",

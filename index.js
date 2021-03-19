@@ -1,6 +1,7 @@
 const { create, ev, Client } = require('@open-wa/wa-automate')
-const welcome = require('./lib/welcome')
+//const welcome = require('./lib/welcome')
 //const left = require('./lib/left')
+var getDB = require('./db');
 const cron = require('node-cron')
 const color = require('./lib/color')
 const fs = require('fs')
@@ -54,65 +55,121 @@ const start = async (iluser = new Client()) => {
         //iluser.onAnyMessage((fn) => messageLog(fn.fromMe, fn.type))
         // Force it to keep the current session
         iluser.onStateChanged((state) => {
-            console.log('[Client State]', state)
+            console.log('[ILUSER STATE]', state)
             if (state === 'CONFLICT' || state === 'UNLAUNCHED') iluser.forceRefocus()
         })
         // listening on message
         iluser.onMessage((async (message) => {
 
-        iluser.getAmountOfLoadedMessages() // Cut message Cache if cache more than 3K
+        iluser.getAmountOfLoadedMessages()
             .then((msg) => {
                 if (msg >= 700) {
-                    console.log('[CLIENT]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
+                    console.log('[ILUSER STATE]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
                     iluser.cutMsgCache()
                 }
             })
-        // msgHndlr(iluser, message)
-        // Message Handler (Loaded from recent cache)
         require('./iluser.js')(iluser, message)
     }))
-           
 
-        iluser.onGlobalParticipantsChanged((async (heuh) => {
-            await welcome(iluser, heuh) 
-            left(iluser, heuh)  
-            }))
+    const allChatz = await iluser.getAllChats(withNewMessageOnly = false)
+    const allGroups = await iluser.getAllGroups()
+    for (let change of allGroups) { 
+    iluser.onGlobalParticipantsChanged(async(change) => {
+        console.log(change)
+        //welcome(iluser, change)
+    try{
+      const info = await iluser.getChatById(change.chat)
+      console.log(`${change.action} => ${info.name}`);
+      if (change.action == 'add') {
+        const msg = await getDB.msg_add(change.chat);
+        const who = change.who;
+        var target = who.match(/\d+/g);
+        if (msg == undefined) {
+          return
+        }else if (msg.msg_add.length == 0) {
+          iluser.sendTextWithMentions(change.chat, `Hii @${target}\nSelamat datang di *${info.name}*, Silahkan untuk memperkenalkan diri.\n\nKetik .menu untuk menggunakan bot`);
+        }else{
+          const get_db = decodeURIComponent(msg.msg_add);
+          iluser.sendText(change.chat, get_db);
+        }
+      }else if (change.action == 'remove') {
+        const msg = await getDB.msg_kick(change.chat);
+        const who = change.who;
+        var target = who.match(/\d+/g);
+        if (msg == undefined) {
+          return
+        }else if (msg.msg_kick.length == 0) {
+          iluser.sendTextWithMentions(change.chat, `@${target} telah wisuda`);
+        }else{
+          const get_db = decodeURIComponent(msg.msg_kick);
+          iluser.sendText(change.chat, get_db);
+        }
+      }
+    }catch(err){console.log(err)}
+  })}
 
-        iluser.onAddedToGroup(async (chat) => {
-            if(isWhite(chat.id)) return iluser.sendText(chat.id, `Halo aku iluser_BOT, Ketik ${prefix}menu Untuk Melihat List Command Ku...`)
+iluser.onAddedToGroup(async (chat) => {
+            if(isWhite(chat.id)) return iluser.sendText(chat.id, `  *INFO*
+Ketik .menu untuk melihat list command ya..
+
+*NOTE!!!*
+Dilarang VC/Telepon!!
+Jika melanggar maka akan di BLOK
+
+Jika ada masalah, kontak admin :
+ILWAN : http://wa.me/6283142933894
+
+*DONASI*
+DANA/Gopay: 083142933894
+Pulsa: 082340779017
+OVO: 085333935211
+PAYPAL : https://www.paypal.me/ilwanxyz`)
             if(mtcState === false){
                 const groups = await iluser.getAllGroups()
                 // BOT group count less than
                 if(groups.length > groupLimit){
                     await iluser.sendText(chat.id, `Maaf, Batas group yang dapat iluser_BOT tampung *${groupLimit}* dan sudah penuh`).then(async () =>{
+                        console.log(`ADDED TO GROUP | Batas grup terlampaui [ ${groupLimit} ] `)
                         iluser.leaveGroup(chat.id)
-                        iluser.deleteChat(chat.id)
                     })
                 }else{
                     if(chat.groupMetadata.participants.length < memberLimit){
                         await iluser.sendText(chat.id, `Maaf, BOT keluar jika member group tidak melebihi ${memberLimit} orang`).then(async () =>{
+                            console.log(`ADDED TO GROUP | Member kurang dari [ ${memberLimit} ] `)
                             iluser.leaveGroup(chat.id)
-                            iluser.deleteChat(chat.id)
                         })
                     }else{
-                        if(!chat.isReadOnly) iluser.sendText(chat.id, `Halo aku iluser_BOT, Ketik ${prefix}menu Untuk Melihat List Command Ku...`)
+                        if(!chat.isReadOnly) iluser.sendText(chat.id, `*INFO*
+Ketik .menu untuk melihat list command ya..
+
+*NOTE!!!*
+Dilarang VC/Telepon!!
+Jika melanggar maka akan di BLOK
+
+Jika ada masalah, kontak admin :
+ILWAN : http://wa.me/6283142933894
+
+*DONASI*
+DANA/Gopay: 083142933894
+Pulsa: 082340779017
+OVO: 085333935211
+PAYPAL: https://www.paypal.me/ilwanxyz`)
+                          console.log(`ADDED TO GROUP | Sukses bergabung `)
                     }
                 }
             }else{
                 await iluser.sendText(chat.id, 'iluser_BOT sedang maintenance, coba lain hari').then(async () => {
                         iluser.leaveGroup(chat.id)
-                        iluser.deleteChat(chat.id)
                 })
             }
         })
 
         // listening on Incoming Call
         iluser.onIncomingCall(( async (call) => {
-            await iluser.sendText(call.peerJid, 'Maaf, saya tidak bisa menerima panggilan. nelfon = block!.\nJika ingin membuka block harap chat Owner!')
+            await iluser.sendText(call.peerJid, 'MELANGGAR RULES!!\n\n*Telepon/VC*')
             .then(() => iluser.contactBlock(call.peerJid))
         }))
-    }
-
+      }
 /**
  * Uncache if there is file change
  * @param {string} module Module name or path
@@ -150,9 +207,9 @@ let options = {
   autoRefresh: true,
   restartOnCrash: start,
   cacheEnabled: false,
-  // executablePath: execPath,
+  //executablePath: 'C:\\Program Files\\Mozilla Firefox\\firefox.exe',
   useChrome: true,
-  stickerServerEndpoint: false,
+  //stickerServerEndpoint: false,
   killProcessOnBrowserClose: false,
   throwErrorOnTosBlock: true,
   chromiumArgs: [
@@ -166,36 +223,6 @@ let options = {
   ]
 }
 
-/*let options1 = {
-  sessionId: 'iluser',
-  headless: headless,
-  qrRefreshS: 20,
-  qrTimeout: 0,
-  authTimeout: 0,
-  autoRefresh: true,
-  restartOnCrash: start,
-  cacheEnabled: false,
-  // executablePath: execPath,
-  useChrome: true,
-  stickerServerEndpoint: false,
-  killProcessOnBrowserClose: false,
-  throwErrorOnTosBlock: true,
-  chromiumArgs: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--aggressive-cache-discard',
-    '--disable-cache',
-    '--disable-application-cache',
-    '--disable-offline-load-stale-cache',
-    '--disk-cache-size=0'
-  ]
-} */
-//if (!headless) options['defaultViewport'] = null
-
 create(options)
-    .then((iluser) => {start(iluser)})
+    .then(async(iluser) => {start(iluser)})
     .catch((error) => console.log(error))
-
-/*create(options1)
-    .then((iluser) => {start(iluser)})
-    .catch((error) => console.log(error)) */
