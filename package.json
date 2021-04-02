@@ -10,7 +10,7 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "iluser",
-  "license": "Apache-2.0",
+  "license": "ISC",
   "peerDependencies": {
     "sharp": "^0.27.1"
   },
@@ -20,7 +20,7 @@
   "dependencies": {
     "@ffmpeg-installer/ffmpeg": "^1.0.20",
     "@justalk/pornhub-api": "^3.4.0",
-    "@open-wa/wa-automate": "^3.9.6",
+    "@open-wa/wa-automate": "^3.10.5",
     "@open-wa/wa-decrypt": "^3.0.1",
     "@vitalets/google-translate-api": "^5.0.0",
     "acrcloud": "^1.4.0",
@@ -72,6 +72,7 @@
     "node-gtts": "^2.0.2",
     "node-run-cmd": "^1.0.1",
     "node-wav": "0.0.2",
+    "nodemon": "^2.0.7",
     "npm": "^7.6.3",
     "nsfai": "^2.0.0",
     "parse-ms": "^2.1.0",
@@ -82,9 +83,11 @@
     "request": "^2.88.2",
     "sastrawijs": "^1.0.3",
     "sharp": "^0.27.1",
+    "spdl-core": "^1.5.1",
     "tesseract.js": "^2.1.1",
+    "text-to-image": "^2.4.4",
     "text2png": "^2.3.0",
-    "tiktok-scraper": "^1.4.17",
+    "tiktok-scraper": "^1.4.19",
     "translatte": "^2.5.8",
     "video-crop": "^1.1.0",
     "video-crop-cli": "^1.1.0",
