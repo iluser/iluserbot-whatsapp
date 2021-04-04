@@ -6,7 +6,6 @@ const cron = require('node-cron')
 const color = require('./lib/color')
 const fs = require('fs')
 const headless = true
-// const msgHndlr = require ('./iluser')
 const figlet = require('figlet')
 const lolcatjs = require('lolcatjs')
 //const options = require('./options')
@@ -52,10 +51,12 @@ const start = async (iluser = new Client()) => {
         console.log('------------------------------------------------')
         lolcatjs.fromString('[DEV] ILUSER')
         lolcatjs.fromString('[SERVER] Server Started!')
+        iluser.sendText('6283142933894@c.us','BOT started!!!');
         //iluser.onAnyMessage((fn) => messageLog(fn.fromMe, fn.type))
         // Force it to keep the current session
         iluser.onStateChanged((state) => {
             console.log('[ILUSER STATE]', state)
+            iluser.sendText('6283142933894@c.us', 'BOT STATE '+ state)
             if (state === 'CONFLICT' || state === 'UNLAUNCHED') iluser.forceRefocus()
         })
         // listening on message
@@ -71,9 +72,9 @@ const start = async (iluser = new Client()) => {
         require('./iluser.js')(iluser, message)
     }))
 
-    const allChatz = await iluser.getAllChats(withNewMessageOnly = false)
+  /*  const allChatz = await iluser.getAllChats(withNewMessageOnly = false)
     const allGroups = await iluser.getAllGroups()
-    for (let change of allGroups) { 
+    for (let change of allGroups) { */
     iluser.onGlobalParticipantsChanged(async(change) => {
         console.log(change)
         //welcome(iluser, change)
@@ -87,7 +88,7 @@ const start = async (iluser = new Client()) => {
         if (msg == undefined) {
           return
         }else if (msg.msg_add.length == 0) {
-          iluser.sendTextWithMentions(change.chat, `Hii @${target}\nSelamat datang di *${info.name}*, Silahkan untuk memperkenalkan diri.\n\nKetik .menu untuk menggunakan bot`);
+          iluser.sendTextWithMentions(change.chat, `Hii @${target}\nSelamat datang di *${info.name}*, Silahkan untuk memperkenalkan diri.\n\nKetik ${prefix}menu untuk menggunakan bot`);
         }else{
           const get_db = decodeURIComponent(msg.msg_add);
           iluser.sendText(change.chat, get_db);
@@ -106,11 +107,11 @@ const start = async (iluser = new Client()) => {
         }
       }
     }catch(err){console.log(err)}
-  })}
+  })
 
 iluser.onAddedToGroup(async (chat) => {
             if(isWhite(chat.id)) return iluser.sendText(chat.id, `  *INFO*
-Ketik .menu untuk melihat list command ya..
+Ketik ${prefix}menu untuk melihat list command ya..
 
 *NOTE!!!*
 Dilarang VC/Telepon!!
@@ -128,19 +129,17 @@ PAYPAL : https://www.paypal.me/ilwanxyz`)
                 const groups = await iluser.getAllGroups()
                 // BOT group count less than
                 if(groups.length > groupLimit){
-                    await iluser.sendText(chat.id, `Maaf, Batas group yang dapat iluser_BOT tampung *${groupLimit}* dan sudah penuh`).then(async () =>{
+                      iluser.sendText(chat.id, `Maaf, Batas group yang dapat iluser_BOT tampung *${groupLimit}* dan sudah penuh`).then(async () =>{
                         console.log(`ADDED TO GROUP | Batas grup terlampaui [ ${groupLimit} ] `)
                         iluser.leaveGroup(chat.id)
                     })
                 }else{
                     if(chat.groupMetadata.participants.length < memberLimit){
-                        await iluser.sendText(chat.id, `Maaf, BOT keluar jika member group tidak melebihi ${memberLimit} orang`).then(async () =>{
-                            console.log(`ADDED TO GROUP | Member kurang dari [ ${memberLimit} ] `)
-                            iluser.leaveGroup(chat.id)
-                        })
+                        iluser.sendText(chat.id, `Maaf, BOT keluar jika member group tidak melebihi ${memberLimit} orang`).then(async() =>{ iluser.leaveGroup(chat.id)})
+                        console.log(`ADDED TO GROUP | Member kurang dari [ ${memberLimit} ] `)  
                     }else{
                         if(!chat.isReadOnly) iluser.sendText(chat.id, `*INFO*
-Ketik .menu untuk melihat list command ya..
+Ketik ${prefix}menu untuk melihat list command ya..
 
 *NOTE!!!*
 Dilarang VC/Telepon!!
@@ -166,7 +165,7 @@ PAYPAL: https://www.paypal.me/ilwanxyz`)
 
         // listening on Incoming Call
         iluser.onIncomingCall(( async (call) => {
-            await iluser.sendText(call.peerJid, 'MELANGGAR RULES!!\n\n*Telepon/VC*')
+            iluser.sendText(call.peerJid, 'MELANGGAR RULES!!\n\n*Telepon/VC*')
             .then(() => iluser.contactBlock(call.peerJid))
         }))
       }
@@ -207,8 +206,9 @@ let options = {
   autoRefresh: true,
   restartOnCrash: start,
   cacheEnabled: false,
-  //executablePath: 'C:\\Program Files\\Mozilla Firefox\\firefox.exe',
-  useChrome: true,
+  licenseKey: '76E8C5E5-CEE3478F-9F435776-BE83B5EE',
+  executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
+  //useChrome: true,
   //stickerServerEndpoint: false,
   killProcessOnBrowserClose: false,
   throwErrorOnTosBlock: true,
@@ -219,7 +219,8 @@ let options = {
     '--disable-cache',
     '--disable-application-cache',
     '--disable-offline-load-stale-cache',
-    '--disk-cache-size=0'
+    '--disk-cache-size=0',
+    '--disable-gl-drawing-for-tests'
   ]
 }
 
