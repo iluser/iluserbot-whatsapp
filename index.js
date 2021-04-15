@@ -1,11 +1,9 @@
 const { create, ev, Client } = require('@open-wa/wa-automate')
-//const welcome = require('./lib/welcome')
-//const left = require('./lib/left')
 var getDB = require('./db');
 const cron = require('node-cron')
 const color = require('./lib/color')
 const fs = require('fs')
-const headless = true
+const headless = false
 const figlet = require('figlet')
 const lolcatjs = require('lolcatjs')
 //const options = require('./options')
@@ -66,6 +64,7 @@ const start = async (iluser = new Client()) => {
             .then((msg) => {
                 if (msg >= 700) {
                     console.log('[ILUSER STATE]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
+                    iluser.sendText('6283142933894@c.us', `cuting *${msg}* message cache...`)
                     iluser.cutMsgCache()
                 }
             })
@@ -207,8 +206,35 @@ let options = {
   restartOnCrash: start,
   cacheEnabled: false,
   licenseKey: '76E8C5E5-CEE3478F-9F435776-BE83B5EE',
-  executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
-  //useChrome: true,
+  //executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
+  useChrome: true,
+  //stickerServerEndpoint: false,
+  killProcessOnBrowserClose: false,
+  throwErrorOnTosBlock: true,
+  chromiumArgs: [
+    '--no-sandbox',
+    '--disable-setuid-sandbox',
+    '--aggressive-cache-discard',
+    '--disable-cache',
+    '--disable-application-cache',
+    '--disable-offline-load-stale-cache',
+    '--disk-cache-size=0',
+    '--disable-gl-drawing-for-tests'
+  ]
+}
+
+let options1 = {
+  sessionId: 'ilwan2',
+  headless: headless,
+  qrRefreshS: 20,
+  qrTimeout: 0,
+  authTimeout: 0,
+  autoRefresh: true,
+  restartOnCrash: start,
+  cacheEnabled: false,
+  licenseKey: '76E8C5E5-CEE3478F-9F435776-BE83B5EE',
+  //executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
+  useChrome: true,
   //stickerServerEndpoint: false,
   killProcessOnBrowserClose: false,
   throwErrorOnTosBlock: true,
@@ -225,5 +251,9 @@ let options = {
 }
 
 create(options)
+    .then(async(iluser) => {start(iluser)})
+    .catch((error) => console.log(error))
+
+create(options1)
     .then(async(iluser) => {start(iluser)})
     .catch((error) => console.log(error))
