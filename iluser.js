@@ -102,18 +102,11 @@ let banned = JSON.parse(fs.readFileSync('./lib/database/banned.json'))
 let nsfw_ = JSON.parse(fs.readFileSync('./lib/database/nsfwz.json'))
 let limit = JSON.parse(fs.readFileSync('./lib/database/limit.json'))
 let gruplimit = JSON.parse(fs.readFileSync('./lib/database/gruplimit.json'))
-let welkom = JSON.parse(fs.readFileSync('./lib/database/welcome.json'))
-let left = JSON.parse(fs.readFileSync('./lib/database/left.json'))
 let muted = JSON.parse(fs.readFileSync('./lib/database/muted.json'))
 let setting = JSON.parse(fs.readFileSync('./lib/database/setting.json'));
 let msgLimit = JSON.parse(fs.readFileSync('./lib/database/msgLimit.json'));
-let adminNumber = JSON.parse(fs.readFileSync('./lib/database/admin.json'))
 let _premium = JSON.parse(fs.readFileSync('./lib/database/premium.json'))
-let _biodata = JSON.parse(fs.readFileSync('./lib/database/biodata.json'))
-let _registered = JSON.parse(fs.readFileSync('./lib/database/registered.json'))
 let taxax = JSON.parse(fs.readFileSync('./lib/database/bacotdb.json'))
-let autostick = JSON.parse(fs.readFileSync('./lib/database/autostick.json'))
-let say = JSON.parse(fs.readFileSync('./lib/database/say.json'))
 const pilot = JSON.parse(fs.readFileSync('./lib/database/pilot.json'))
 let vnlist = JSON.parse(fs.readFileSync('./lib/database/vn.json'))
 const bacot = require('./lib/database/bacotdb.json')
@@ -125,13 +118,6 @@ const process = require('process');
 // PROTECT
 let antilink = JSON.parse(fs.readFileSync('./lib/database/antilink.json'))
 let _antinsfw = JSON.parse(fs.readFileSync('./lib/database/antiporn.json'))
-let antibadword = JSON.parse(fs.readFileSync('./lib/database/antibadword.json'))
-let msgBadword = JSON.parse(fs.readFileSync('./lib/database/msgBadword.json'))
-let badword = JSON.parse(fs.readFileSync('./lib/database/badword.json'))
-let stickerspam = JSON.parse(fs.readFileSync('./lib/database/stickerspam.json'))
-//const _leveling = JSON.parse(fs.readFileSync('./lib/database/leveling.json'))
-//const _level = JSON.parse(fs.readFileSync('./lib/database/level.json'))
-const _afk = JSON.parse(fs.readFileSync('./lib/database/afk.json'))
 
 const { 
     RemoveBgResult, 
@@ -167,8 +153,6 @@ const {
     base64MimeType,
     nulis
 } = require('./lib/functions')
-//const {level} = require('./function')
-//const afk = require('./function/afk')
 const { 
     help, 
     snk, 
@@ -315,16 +299,10 @@ module.exports = iluser = async (iluser, message) => {
         const isUrl = new RegExp(/https?:\/\/(www\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\.[a-zA-Z0-9()]{1,6}\b([-a-zA-Z0-9()@:%_+.~#?&/=]*)/gi)
         const url = args.length !== 0 ? args[0] : ''
         const prf = /^[°•π÷×¶∆£¢€¥®™✓_=|~!?@#$%^&\\©^.]/.test(commands) ? commands.match(/^[°•π÷×¶∆£¢€¥®™✓_=|~!?@#$%^&\\©^.]/gi) : '-'
-       
-        const isBadword = badword.includes(chatId)
-        const isautosticker = isGroupMsg ? autostick.includes(groupId) : false
-        //const isAfkOn = afk.checkAfkUser(sender.id, _afk)
-        //const isLevelingOn = isGroupMsg ? _leveling.includes(groupId) : false
         const isAntiNsfw = isGroupMsg ? _antinsfw.includes(groupId) : false
         const isPrivate = sender.id === chat.contact.id
         const isCmd = command.startsWith(prefix)
         const isPrf = command.startsWith(prf)
-        const isAdmin = adminNumber.includes(sender.id)
         const isOwner = ownerNumber.includes(sender.id)
         const isPilot = pilot.includes(sender.id)
         const isQuotedImage = quotedMsg && quotedMsg.type === 'image'
@@ -478,77 +456,6 @@ process.on('unhandledRejection', (reason, promise) => {
         }
     }
 
-const addAfk = (userId, time, reason) => {
-            let obj = {id: `${userId}`, time: `${time}`, reason: `${reason}`}
-            _afk.push(obj)
-            fs.writeFileSync('./lib/database/afk.json', JSON.stringify(_afk))
-        }
-
-const getAfk = (userId) => {
-            let isAfk = false
-            Object.keys(_afk).forEach((i) => {
-                if (_afk[i].id === userId) {
-                    isAfk = true
-                }
-            })
-            return isAfk
-        }
-
-        const getAfkReason = (userId) => {
-            let position = false
-            Object.keys(_afk).forEach((i) => {
-                if (_afk[i].id === userId) {
-                    position = i
-                }
-            })
-            if (position !== false) {
-                return _afk[position].reason
-            }
-        }
-
-        const getAfkTime = (userId) => {
-            let position = false
-            Object.keys(_afk).forEach((i) => {
-                if (_afk[i].id === userId) {
-                    position = i
-                }
-            })
-            if (position !== false) {
-                return _afk[position].time
-            }
-        }
-
-        const getAfkId = (userId) => {
-            let position = false
-            Object.keys(_afk).forEach((i) => {
-                if (_afk[i].id === userId) {
-                    position = i
-                }
-            })
-            if (position !== false) {
-                return _afk[position].id
-            }
-        }
-    
-
-                // AFK
-        if (isGroupMsg && !isBanned) {
-            const checking = getAfk(sender.id)
-            for (let ment of mentionedJidList) {
-                if (getAfk(ment)) {
-                    const getId = getAfkId(ment)
-                    const getReason = getAfkReason(getId)
-                    const getTime = getAfkTime(getId)
-                    await iluser.sendTextWithMentions(from, `Sssttt! @${ment} sedang AFK, jangan diganggu!\n*Alasan*: ${getReason}\n*Sejak*: ${getTime}`, id)
-                }
-            }
-            if (checking) {
-                _afk.splice(sender.id, 1)
-                fs.writeFileSync('./lib/database/afk.json', JSON.stringify(_afk))
-                await iluser.sendTextWithMentions(from, `@${sender.id} telah kembali dari AFK`, id)
-            }
-        } 
-
         if (chats.match(/(assalamualaikum)/)) {
            iluser.reply(message.from, `Waalaikumsalam ${pushname}`, message.id)
         }
@@ -569,8 +476,8 @@ const getAfk = (userId) => {
 
         const mess = {
             wait: 'Processing...',
-            iklan: `\n\nSupport bot dengan cara follow dan subscribe instagram.com/il.userr & youtube.com/iluser`,
-            iklann: `Support bot dengan cara follow dan subscribe instagram.com/il.userr & youtube.com/iluser`,
+            iklan: `\n\nSupport saya dengan cara follow instagram.com/il.userr`,
+            iklann: `Subscribe https://youtube.com/iluser ya kak ${pushname}`,
             nonaktif: `Fitur ini dinonaktifkan oleh admin grup`,
             noprem: `Hii ${pushname}., \nKamu bukan user premium, jadi bot tidak bisa mengirimkan filenya untukmu. Silahkan unduh manual melalui link di bawah ini.`,
             blockk: '```Kamu telah di blokir karena melanggar #rules bot.!```\n\n\nUntuk unblock silahkan hubungi developer bot.',
@@ -734,73 +641,6 @@ const getAfk = (userId) => {
         
                 // END HELPER FUNCTION
 
-        // ROLE (Change to what you want, or add) and you can change the role sort based on XP.
-       /* const levelRole = level.getLevelingLevel(sender.id, _level)
-        var role = 'Copper V'
-        if (levelRole >= 5) {
-            role = 'Copper IV'
-        } else if (levelRole >= 10) {
-            role = 'Copper III'
-        } else if (levelRole >= 15) {
-            role = 'Copper II'
-        } else if (levelRole >= 20) {
-            role = 'Copper I'
-        } else if (levelRole >= 25) {
-            role = 'Silver V'
-        } else if (levelRole >= 30) {
-            role = 'Silver IV'
-        } else if (levelRole >= 35) {
-            role = 'Silver III'
-        } else if (levelRole >= 40) {
-            role = 'Silver II'
-        } else if (levelRole >= 45) {
-            role = 'Silver I'
-        } else if (levelRole >= 50) {
-            role = 'Gold V'
-        } else if (levelRole >= 55) {
-            role = 'Gold IV'
-        } else if (levelRole >= 60) {
-            role = 'Gold III'
-        } else if (levelRole >= 65) {
-            role = 'Gold II'
-        } else if (levelRole >= 70) {
-            role = 'Gold I'
-        } else if (levelRole >= 75) {
-            role = 'Platinum V'
-        } else if (levelRole >= 80) {
-            role = 'Platinum IV'
-        } else if (levelRole >= 85) {
-            role = 'Platinum III'
-        } else if (levelRole >= 90) {
-            role = 'Platinum II'
-        } else if (levelRole >= 95) {
-            role = 'Platinum I'
-        } else if (levelRole >= 100) {
-            role = 'Exterminator'
-        }
-
-        // Leveling [BETA] by Slavyan
-        if (isGroupMsg && !level.isGained(sender.id) && !isBanned && !isBlocked) {
-            isMuted(chatId) == false
-            try {
-                level.addCooldown(sender.id)
-                const currentLevel = level.getLevelingLevel(sender.id, _level)
-                const amountXp = Math.floor(Math.random() * (15 - 25 + 1) + 15)
-                const requiredXp = 5 * Math.pow(currentLevel, 2) + 50 * currentLevel + 100
-                level.addLevelingXp(sender.id, amountXp, _level)
-                if (requiredXp <= level.getLevelingXp(sender.id, _level)) {
-                    level.addLevelingLevel(sender.id, 1, _level)
-                    const userLevel = level.getLevelingLevel(sender.id, _level)
-                    const fetchXp = 5 * Math.pow(userLevel, 2) + 50 * userLevel + 100
-                    await iluser.reply(message.from, `Kamu naik level ya beb. cek level kamu saat ini di .level`, message.id)
-                    console.log(color('INFO | User naik level', 'olive'))
-
-                }
-            } catch (err) {
-                console.error(err)
-            }
-        } */
-
         // Serial Number Generator
         function GenerateRandomNumber(min,max){
             return Math.floor(Math.random() * (max - min + 1)) + min;
@@ -900,9 +740,9 @@ function modifExif(buffer, id, callback) {
       callback(fs.readFileSync('./image/' + id + '.webp', {
         encoding: 'base64'
       }))
-      fs.unlink('./image/' + id + '.webp').then(() => {
-        console.log('Succes delete sticker from server')
-      })
+      //fs.unlink('./image/' + id + '.webp').then(() => {
+      //  console.log('Succes delete sticker from server')
+     // })
     })
     .on('error', () => console.log('error!'))
 }
@@ -930,9 +770,9 @@ const modifWebp = (id, buffers) => new Promise((resolve) => {
       let mediaData = (fs.readFileSync('./image/' + id + '.webp', {
         encoding: 'base64'
       }))
-      fs.unlink('./image/' + id + '.webp').then(() => {
-        console.log('Succes delete sticker from server')
-      })
+     // fs.unlink('./image/' + id + '.webp').then(() => {
+     //   console.log('Succes delete sticker from server')
+    //  })
       return resolve(mediaData)
     })
   })
@@ -992,7 +832,17 @@ async function tiktok_hd(link){
       console.log(error);
     }
 };
-
+const fbDown = (link) => new Promise((resolve, reject) => {
+  fetch('https://fbdownloader.net/download/?url='+link, {
+      method: 'GET',
+      timeout: 10000
+  }).then(res => res.text())
+    .then(text => {
+      const $ = cheerio.load(text);
+      const video = $(`a[class="dropbox-saver dropbox-dropin-btn dropbox-dropin-default"]`).attr('href');
+      resolve(video)
+  }).catch(err => reject(err))
+});
             /**
  * Convert Writable Stream to Buffer
  * @param {WritableStreamCallback} cb Callback with stream
@@ -1246,39 +1096,6 @@ function post(url, formdata) {
             .catch(reject)
     })
 }
-        //autosticker
-        if (isGroupMsg && isautosticker && isMedia && isImage ) {
-                    const encryptMedia = isQuotedImage ? quotedMsg : message
-                    const mediaData = await decryptMedia(encryptMedia, uaOverride)
-                    webp.buffer2webpbuffer(mediaData, 'jpg', '-q 100')
-                        .then(async (res) => {
-                            sharp(res)
-                                .resize(512, 512, {
-                                    fit: 'contain',
-                                    background: {
-                                        r: 0,
-                                        g: 0,
-                                        b: 0,
-                                        alpha: 0
-                                    }
-                                })
-                                .toFile(`./temp/stage_${sender.id}.webp`, async (err) => {
-                                    if (err) return console.error(err)
-                                    await exec(`webpmux -set exif ./temp/data.exif ./temp/stage_${sender.id}.webp -o ./temp/${sender.id}.webp`, { log: true })
-                                    if (fs.existsSync(`./temp/${sender.id}.webp`)) {
-                                        const data = fs.readFileSync(`./temp/${sender.id}.webp`)
-                                        const base64 = `data:image/webp;base64,${data.toString('base64')}`
-                                        await iluser.sendRawWebpAsSticker(message.from, base64)
-                                        console.log(color('SUCCESS | autosticker', 'olive'))
-                                        //iluser.reply(message.from, `${mess.iklann}`, message.id)
-                                        fs.unlinkSync(`./temp/${sender.id}.webp`)
-                                        fs.unlinkSync(`./temp/stage_${sender.id}.webp`)
-                                    }
-                                })
-                        })
-                    }
-        
-
          // ANTI SPAM
         //addFilter(from)
 
@@ -1897,7 +1714,7 @@ function post(url, formdata) {
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return 
-            if (args.length === 1)  return iluser.reply(message.from, `Contoh *${prefix}resepmasakan rawon*`, message.id)
+            if (args.length === 1)  return iluser.reply(message.from, `Contoh *${prefix}resep rawon*`, message.id)
             try {
             const resp = await axios.get('https://api.vhtear.com/resepmasakan?query='+body.slice(7)+'&apikey='+vhtearkey)
             const { bahan, cara, image, title  } = resp.data.result
@@ -1911,7 +1728,7 @@ function post(url, formdata) {
             } catch (err) {
              await iluser.reply(message.from, 'Error!', message.id)
              console.log(color('FAILED | resep', 'red'))
-             iluser.sendText(ownerNumber, 'Resepmasakan Error : ' + err)
+             iluser.sendText(ownerNumber, 'Resep Error : ' + err)
            }
        }
            break
@@ -2286,6 +2103,8 @@ limitAdd(serial)
             break 
 
         //STICKER CREATOR
+        case prf+'sticker':
+        case prf+'stiker':
         case prefix+'sticker':
         case prefix+'stiker':
         case prefix+'sk':
@@ -2314,9 +2133,10 @@ limitAdd(serial)
                     alpha: 0
                   }
                 }).webp().toBuffer().then(buffer => {
-                  modifExif(buffer, id, (res) => {
+                  modifExif(buffer, id, async (res) => {
                     mediaData = res.toString('base64')
-                    iluser.sendRawWebpAsSticker(message.from, mediaData, message.id)
+                    await iluser.sendRawWebpAsSticker(message.from, mediaData, message.id)
+                    await iluser.reply(message.from, `${mess.iklann}`, message.id)
                   })
                 })
               })
@@ -2333,9 +2153,10 @@ limitAdd(serial)
                     alpha: 0
                   }
                 }).webp().toBuffer().then(buffer => {
-                  modifExif(buffer, id, (res) => {
+                  modifExif(buffer, id, async (res) => {
                     mediaData = res.toString('base64')
-                    iluser.sendRawWebpAsSticker(message.from, mediaData, message.id)
+                    await iluser.sendRawWebpAsSticker(message.from, mediaData, message.id)
+                    await iluser.reply(message.from, `${mess.iklann}`, message.id)
                   })
                 })
               })
@@ -2364,6 +2185,7 @@ limitAdd(serial)
                 iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Maaf, kualitas tidak didukung untuk video tsb', message.id))
               })
             console.log(color('SUCCESS | sending sticker', 'olive'))
+            iluser.reply(message.from, `${mess.iklann}`, message.id)
             }else {
                 await iluser.reply(message.from, `Kirim atau tag media yang akan jadi stiker. tolol`, message.id)
             }
@@ -3014,7 +2836,6 @@ limitAdd(serial)
                 const serplay = body.slice(6)
                 const webplay = await axios.get(`https://api.vhtear.com/ytmp3?query=${serplay}&apikey=${vhtearkey}`)
                     if (Number(webplay.data.result.size.split(' MB')[0]) >= 30.00) return iluser.sendFileFromUrl(message.from, webplay.data.result.image, `iluser_BOT_thumb.jpg`, `sizenya terlalu gede sayang, dd gakuat :(\n\nunduh manual melalui link di bawah ini\n${webplay.data.result.mp3} [ *${webplay.data.result.size}* ]\n\n*Judul* : ${webplay.data.result.title}\n*Durasi* : ${webplay.data.result.duration} ${mess.iklan}`, message.id)
-                    //const { image, mp3, size, ext, title, duration } = await webplay2.result
                     const captplay = `*YOUTUBE PLAY*\n\n• *Judul* : ${webplay.data.result.title}\n• *Durasi* : ${webplay.data.result.duration}\n• *Exp* : ${webplay.data.result.ext}`
                     //if (!isPremium) return await iluser.sendFileFromUrl(message.from, image, `thumb.jpg`, `${captplay}\n\n${mess.noprem}\n[${mp3}]`, message.id)
                     await iluser.sendFileFromUrl(message.from, webplay.data.result.image, `iluser_BOT_thumb.jpg`, `${captplay}\n\nSedang mengirim audio...`, message.id)
@@ -3095,8 +2916,8 @@ limitAdd(serial)
                  if (webplay2.status == false) {
                     iluser.reply(message.from, `*Maaf Terdapat kesalahan saat mengambil data, mohon pilih media lain...*`, message.id)
                 } else {
-                    //if (Number(webplay2.result.size.split(' MB')[0]) >= 70.00) return iluser.reply(message.from, 'Size audio sudah melebihi batas', message.id)
                     const { image, mp3, size, ext, title, duration, url, id } = await webplay2.result
+                    if (Number(size.split(' MB')[0]) >= 20.00) return iluser.sendFileFromUrl(message.from, image, `thumb.jpg`, `\nsizenya terlalu gede sayang, dd gakuat :(\n\nunduh manual melalui link di bawah ini\n${mp3} [ *${size}* ]\n\n*Judul* : ${title} ${mess.iklan}`, message.id)
                     const captplay = `*${title}*\n\n*Durasi* : ${duration}\n*Url* : ${url}\n*Url Download* : ${mp3}`
                     //if (!isPremium) return await iluser.sendFileFromUrl(message.from, image, `thumb.jpg`, `${captplay}\n\n${mess.noprem}\n[${mp3}]`, message.id)
                     await iluser.reply(message.from, `${captplay}\n\nSedang mengirim audio...`, message.id)
@@ -3113,40 +2934,6 @@ limitAdd(serial)
             }
         }
             break
-/*case prefix+'instagram':
-case prefix+'ig':
-case prefix+'insta':{
-                const disable = await getDB.cek_disable(message.from, `${prefix}ig`);
-                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
-            try {
-            if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            
-            await limitAdd(serial)
-                if (args.length === 1) return iluser.reply(message.from, `Linknya mana tol?`, message.id)
-                if (!args[1].includes('instagram.com')) return iluser.reply(message.from, `urlnya bukan dari instagram itu tol`, message.id)
-                let arrBln = ["Januari","Februaru","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"]
-                const idRegex = /([-_0-9A-Za-z]{11})/
-                const idIGG = args[1].match(idRegex)
-                await getPost(idIGG[0]).then((post) => {
-                    let a = new Date(post.date * 1000)
-                    const jam = a.getHours()
-                    const menit = a.getMinutes()
-                    const bulan = a.getMonth()
-                    const tanggal = a.getDate()
-                    const tahun = a.getFullYear()
-                    const captig = `*INSTAGRAM DOWNLOADER*\n\n*Username* : ${post.owner_user}\n*Waktu Publish* : ${jam}:${menit} ${tanggal}-${arrBln[bulan - 1]}-${tahun} ${mess.iklan}`
-                    const captigg = `*INSTAGRAM DOWNLOADER*\n\n*Username* : ${post.owner_user}\n*Waktu Publish* : ${jam}:${menit} ${tanggal}-${arrBln[bulan - 1]}-${tahun}\n`
-                   // if (!isPremium) return iluser.sendImage(message.from, './logo.png', 'kntl.png',`${captigg}\n\n${mess.noprem}\n[${post.url}]`, message.id);
-                    iluser.sendFileFromUrl(message.from, post.url, `Insta`, captig, message.id)
-                })
-            } catch (err) {
-                await iluser.reply(message.from, 'Error', message.id)
-                await iluser.sendText(ownerNumber, `Error instagram:\n${err}`)
-                console.log(color('FAILED | instagram downloader', 'red'))
-            }
-        }
-            break*/
 case prefix+'instagram':
 case prefix+'ig':
 case prefix+'insta':{
@@ -3171,7 +2958,7 @@ case prefix+'insta':{
                     const captig = `*INSTAGRAM DOWNLOADER*\n\n*Username* : ${post.owner_user}\n*Waktu Publish* : ${jam}:${menit} ${tanggal}-${arrBln[bulan - 1]}-${tahun} ${mess.iklan}`
                     const captigg = `*INSTAGRAM DOWNLOADER*\n\n*Username* : ${post.owner_user}\n*Waktu Publish* : ${jam}:${menit} ${tanggal}-${arrBln[bulan - 1]}-${tahun}\n`
                    // if (!isPremium) return iluser.sendImage(message.from, './logo.png', 'kntl.png',`${captigg}\n\n${mess.noprem}\n[${post.url}]`, message.id);
-                    iluser.sendFileFromUrl(message.from, post.url, `Insta`, captig, message.id).catch(() => iluser.reply(message.from, 'Error!', message.id))
+                    iluser.sendFileFromUrl(message.from, post.url, `iluser`, captig, message.id).catch(() => iluser.reply(message.from, 'Error!', message.id))
                     limitAdd(serial)
                 })
             } catch (err) {
@@ -3343,7 +3130,7 @@ batasAdd(serial)
         }
 
             break
-        case prefix+'fbb':{
+        case prefix+'fb3':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}fb`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
@@ -3352,7 +3139,7 @@ batasAdd(serial)
             const link = args[1]
             if(!link.includes('facebook.com')) return await iluser.reply(message.from, "Maaf, url tidak valid bersumber dari facebook.com", message.id)
             try {
-                const query = body.slice(4)
+                const query = body.slice(5)
                 const fbeh = await axios.get(`http://docs-jojo.herokuapp.com/api/fb?url=${query}`)
                 await iluser.sendFileFromUrl(message.from, fbeh.data.result.normal, ``, ``, message.id)
                 console.log(color('SUCCESS | Facebook downloader', 'olive'))
@@ -3363,6 +3150,60 @@ batasAdd(serial)
                 iluser.reply(message.from, `Error!`, message.id)
             }
         }
+        case prefix+'fb3':
+        try {
+          const url = message.body.slice(5);
+          const video = await fbDown(url);
+          axios.get('http://itsmeazis.000webhostapp.com/api/fb.php?url='+url).then(async res => {
+            const link = url.split('/')[2];
+            if (link == "m.facebook.com") {
+              if(video == undefined){
+                iluser.sendText(message.from, "Tidak dapat menemukan video!, Sepertinya video tidak untuk publik")
+                console.log('FAILED | media video tidak ditemukan')
+              }else{
+                var rnd = randomName(30) + '.mp4';
+                await download(video, './temp/' + rnd, function(){
+                  const a = base64_encode('./temp/' + rnd);
+                  var base64str = 'data:video/mp4'+";base64,"+a.toString()
+                  iluser.sendFile(message.from, base64str, rnd, 'sukses download! from *Facebook*');
+                  console.log('SUCCESS | download media from FACEBOOK');
+                });
+              }
+            }else if (res.data.links == undefined) {
+              iluser.sendText(message.from, "Tidak dapat menemukan video!, Sepertinya video tidak untuk publik")
+              console.log('FAILED | media video tidak ditemukan')
+            }else if (res.data.links['Download High Quality'] !=undefined) {
+              var rnd = randomName(30) + '.mp4';
+              const video = res.data.links['Download High Quality'];
+              const videoSD = res.data.links['Download Low Quality'];
+              try{
+                await download(video, './temp/' + rnd, async function(){
+                  const a = base64_encode('./temp/' + rnd);
+                  var base64str = 'data:video/mp4'+";base64,"+a.toString()
+                  iluser.sendFile(message.from, base64str, rnd, `sukses download! from *Facebook*\nHD : ${await short(video)}\nSD : ${await short(videoSD)}`);
+                  console.log('SUCCESS | download media from FACEBOOK');
+                });
+              }catch(err){
+                console.log(err)
+              }
+            }else{
+              var rnd = randomName(30) + '.mp4';
+              const video = res.data.links['Download Low Quality'];
+              try{
+                await download(video, './temp/' + rnd, async function(){
+                  const a = base64_encode('./temp/' + rnd);
+                  var base64str = 'data:video/mp4'+";base64,"+a.toString()
+                  iluser.sendFile(message.from, base64str, rnd, `sukses download! from *Facebook*\nHD : unavailable\nSD : ${await short(video)}`);
+                  console.log('SUCCESS | download media from FACEBOOK');
+                });
+              }catch(err){
+                console.log(err)
+              }
+            }
+          })
+      }catch(err){
+        console.log(err)
+      }
         break
         case prefix+'fb':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}fb`);
@@ -4321,7 +4162,7 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
 
         case prefix+'disable':{
             const menu = body.slice(9);
-            const list = [`${prefix}brainly`,`${prefix}nulis`,`${prefix}nulis2`,`${prefix}nulis3`,`${prefix}wiki`,`${prefix}kbbi`,`${prefix}translate`,`${prefix}tr`,`${prefix}google`,`${prefix}totext`,`${prefix}hitung`,`${prefix}playstore`,`${prefix}apkpure`,`${prefix}shopee`,`${prefix}newstickerline`,`${prefix}ytsearch`,`${prefix}spek`,`${prefix}motor`,`${prefix}mobil`,`${prefix}alamat`,`${prefix}resep`,`${prefix}checkip`,`${prefix}checkip2`,`${prefix}jarak`,`${prefix}heroml`,`${prefix}jadwalbola`,`${prefix}waktu`,`${prefix}news`,`${prefix}covidindo`,`${prefix}covid`,`${prefix}infonomor`,`${prefix}resi`,`${prefix}kurs`,`${prefix}ceklokasi`,`${prefix}quran`,`${prefix}jadwalshalat`,`${prefix}tafsir`,`${prefix}infosurah`,`${prefix}listsurah`,`${prefix}stiker`,`${prefix}sfire`,`${prefix}slight`,`${prefix}ttp`,`${prefix}attp`,`${prefix}ttp2`,`${prefix}ttg`,`${prefix}memestiker`,`${prefix}findsticker`,`${prefix}sline`,`${prefix}video`,`${prefix}getvideo`,`${prefix}music`,`${prefix}getmusik`,`${prefix}asupan`,`${prefix}yt`,`${prefix}ytmp3`,`${prefix}lagu`,`${prefix}joox`,`${prefix}ig`,`${prefix}ig2`,`${prefix}tw`,`${prefix}tw2`,`${prefix}pin`,`${prefix}fb`,`${prefix}fb2`,`${prefix}tiktok`,`${prefix}tt`,`${prefix}smule`,`${prefix}starmaker`,`${prefix}igstory`,`${prefix}tomp3`,`${prefix}bass`,`${prefix}distord`,`${prefix}tts`,`${prefix}setvn`,`${prefix}v`,`${prefix}listvn`,`${prefix}wattpad`,`${prefix}wpread`,`${prefix}cerpen`,`${prefix}puisi`,`${prefix}kebalik`,`${prefix}creepyfact`,`${prefix}fakta`,`${prefix}cersex`,`${prefix}bacot`,`${prefix}bacotadd`,`${prefix}renungan`,`${prefix}pantun`,`${prefix}bucin`,`${prefix}katabijak`,`${prefix}katasenja`,`${prefix}katafiersa`,`${prefix}quotes`,`${prefix}hilih`,`${prefix}alay`,`${prefix}chord`,`${prefix}lirik`,`${prefix}zodiak`,`${prefix}zodiak2`,`${prefix}wall`,`${prefix}toimg`,`${prefix}textmaker`,`${prefix}gambar`,`${prefix}googleimage`,`${prefix}twtstalk`,`${prefix}tiktokstalk`,`${prefix}igstalk`,`${prefix}smulestalk`,`${prefix}phcomment`,`${prefix}quotemaker`,`${prefix}quoteit`,`${prefix}maps`,`${prefix}pokemon`,`${prefix}kucing`,`${prefix}anjing`,`${prefix}memeindo`,`${prefix}meme`,`${prefix}qrcode`,`${prefix}dadu`,`${prefix}koin`,`${prefix}cewe`,`${prefix}cowo`,`${prefix}ptlvid`,`${prefix}infogempa`,`${prefix}ssphone`,`${prefix}sspc`,`${prefix}springflow`,`${prefix}watersplash`,`${prefix}cloudy`,`${prefix}sketch`,`${prefix}threats`,`${prefix}glass`,`${prefix}greyscale`,`${prefix}invert`,`${prefix}invertgrey`,`${prefix}brightness`,`${prefix}sepia`,`${prefix}burik`,`${prefix}blurfry`,`${prefix}magik`,`${prefix}captcha`,`${prefix}kpop`,`${prefix}kue`,`${prefix}chalktext`,`${prefix}wooden-sign`,`${prefix}salju`,`${prefix}bioskop`,`${prefix}kalung`,`${prefix}gelang`,`${prefix}beach-sign`,`${prefix}bordir2`,`${prefix}blood2`,`${prefix}window`,`${prefix}snow-sign`,`${prefix}kapal`,`${prefix}pesawat`,`${prefix}jalan`,`${prefix}einstein`,`${prefix}lipstick`,`${prefix}typewriter`,`${prefix}graffiti`,`${prefix}graffiti2`,`${prefix}graffiti3`,`${prefix}tahta`,`${prefix}goreng`,`${prefix}carbon`,`${prefix}neon-sign`,`${prefix}karat`,`${prefix}kayu`,`${prefix}tato`,`${prefix}embun`,`${prefix}trumptwt`,`${prefix}silktext`,`${prefix}mymind`,`${prefix}coffee`,`${prefix}ukir`,`${prefix}smoketext`,`${prefix}kanna`,`${prefix}sarah`,`${prefix}resend`,`${prefix}film`,`${prefix}kadargay`,`${prefix}aiquote`,`${prefix}subreddit`,`${prefix}artinama`,`${prefix}pasangan`,`${prefix}nomorhoki`,`${prefix}shorturl`,`${prefix}readmore`,`${prefix}imgcompress`,`${prefix}nickepep`,`${prefix}wasted`,`${prefix}gdrive`,`${prefix}kiss`,`${prefix}jail`,`${prefix}wame`,`${prefix}imgtourl`,`${prefix}tod`,`${prefix}truth`,`${prefix}dare`,`${prefix}family100`,`${prefix}caklontong`,`${prefix}tebakgambar`,`${prefix}apakah`,`${prefix}bisakah`,`${prefix}nilai`,`${prefix}kapankah`,`${prefix}trash`,`${prefix}hitler`,`${prefix}babi`,`${prefix}ganteng`,`${prefix}cantik`,`${prefix}getpp`,`${prefix}getsts`,`${prefix}slap`,`${prefix}hug`,`${prefix}pat`,`${prefix}afk`,`${prefix}groupinfo`,`${prefix}nhder`,`${prefix}randomkiss`,`${prefix}randomhug`,`${prefix}randomcry`,`${prefix}fetish`,`${prefix}husbu`,`${prefix}randomnekonime`,`${prefix}randomanime`,`${prefix}lewds`,`${prefix}loli`,`${prefix}malanime`,`${prefix}wallanime`,`${prefix}wait`,`${prefix}wait`,`${prefix}waifu`,`${prefix}xnxx`,`${prefix}hehe`,`${prefix}randomblowjob`,`${prefix}xxx`,`${prefix}getxxx`,`${prefix}xvideos`,`${prefix}getxvideos`];
+            const list = [`${prefix}brainly`,`${prefix}nulis`,`${prefix}nulis2`,`${prefix}nulis3`,`${prefix}wiki`,`${prefix}kbbi`,`${prefix}translate`,`${prefix}tr`,`${prefix}google`,`${prefix}totext`,`${prefix}hitung`,`${prefix}playstore`,`${prefix}apkpure`,`${prefix}shopee`,`${prefix}newstickerline`,`${prefix}ytsearch`,`${prefix}spek`,`${prefix}motor`,`${prefix}mobil`,`${prefix}alamat`,`${prefix}resep`,`${prefix}checkip`,`${prefix}checkip2`,`${prefix}jarak`,`${prefix}heroml`,`${prefix}jadwalbola`,`${prefix}waktu`,`${prefix}news`,`${prefix}covidindo`,`${prefix}covid`,`${prefix}infonomor`,`${prefix}resi`,`${prefix}kurs`,`${prefix}ceklokasi`,`${prefix}quran`,`${prefix}jadwalshalat`,`${prefix}tafsir`,`${prefix}infosurah`,`${prefix}listsurah`,`${prefix}stiker`,`${prefix}sfire`,`${prefix}slight`,`${prefix}ttp`,`${prefix}attp`,`${prefix}ttp2`,`${prefix}ttg`,`${prefix}memestiker`,`${prefix}findsticker`,`${prefix}sline`,`${prefix}video`,`${prefix}getvideo`,`${prefix}music`,`${prefix}getmusik`,`${prefix}asupan`,`${prefix}yt`,`${prefix}ytmp3`,`${prefix}lagu`,`${prefix}joox`,`${prefix}ig`,`${prefix}ig2`,`${prefix}tw`,`${prefix}tw2`,`${prefix}pin`,`${prefix}fb`,`${prefix}fb2`,`${prefix}tiktok`,`${prefix}tt`,`${prefix}smule`,`${prefix}starmaker`,`${prefix}igstory`,`${prefix}tomp3`,`${prefix}bass`,`${prefix}distord`,`${prefix}tts`,`${prefix}setvn`,`${prefix}v`,`${prefix}listvn`,`${prefix}wattpad`,`${prefix}wpread`,`${prefix}cerpen`,`${prefix}puisi`,`${prefix}kebalik`,`${prefix}creepyfact`,`${prefix}fakta`,`${prefix}cersex`,`${prefix}bacot`,`${prefix}bacotadd`,`${prefix}renungan`,`${prefix}pantun`,`${prefix}bucin`,`${prefix}katabijak`,`${prefix}katasenja`,`${prefix}katafiersa`,`${prefix}quotes`,`${prefix}hilih`,`${prefix}alay`,`${prefix}chord`,`${prefix}lirik`,`${prefix}zodiak`,`${prefix}zodiak2`,`${prefix}wall`,`${prefix}toimg`,`${prefix}textmaker`,`${prefix}gambar`,`${prefix}googleimage`,`${prefix}twtstalk`,`${prefix}tiktokstalk`,`${prefix}igstalk`,`${prefix}smulestalk`,`${prefix}phcomment`,`${prefix}quotemaker`,`${prefix}quoteit`,`${prefix}maps`,`${prefix}pokemon`,`${prefix}kucing`,`${prefix}anjing`,`${prefix}memeindo`,`${prefix}meme`,`${prefix}qrcode`,`${prefix}dadu`,`${prefix}koin`,`${prefix}cewe`,`${prefix}cowo`,`${prefix}ptlvid`,`${prefix}infogempa`,`${prefix}ssphone`,`${prefix}sspc`,`${prefix}springflow`,`${prefix}watersplash`,`${prefix}cloudy`,`${prefix}sketch`,`${prefix}threats`,`${prefix}glass`,`${prefix}greyscale`,`${prefix}invert`,`${prefix}invertgrey`,`${prefix}brightness`,`${prefix}sepia`,`${prefix}burik`,`${prefix}blurfry`,`${prefix}magik`,`${prefix}captcha`,`${prefix}kpop`,`${prefix}kue`,`${prefix}chalktext`,`${prefix}wooden-sign`,`${prefix}salju`,`${prefix}bioskop`,`${prefix}kalung`,`${prefix}gelang`,`${prefix}beach-sign`,`${prefix}bordir2`,`${prefix}blood2`,`${prefix}window`,`${prefix}snow-sign`,`${prefix}kapal`,`${prefix}pesawat`,`${prefix}jalan`,`${prefix}einstein`,`${prefix}lipstick`,`${prefix}typewriter`,`${prefix}graffiti`,`${prefix}graffiti2`,`${prefix}graffiti3`,`${prefix}tahta`,`${prefix}goreng`,`${prefix}carbon`,`${prefix}neon-sign`,`${prefix}karat`,`${prefix}kayu`,`${prefix}tato`,`${prefix}embun`,`${prefix}trumptwt`,`${prefix}silktext`,`${prefix}mymind`,`${prefix}coffee`,`${prefix}ukir`,`${prefix}smoketext`,`${prefix}kanna`,`${prefix}sarah`,`${prefix}resend`,`${prefix}film`,`${prefix}kadargay`,`${prefix}aiquote`,`${prefix}subreddit`,`${prefix}artinama`,`${prefix}pasangan`,`${prefix}nomorhoki`,`${prefix}shorturl`,`${prefix}readmore`,`${prefix}imgcompress`,`${prefix}nickepep`,`${prefix}wasted`,`${prefix}gdrive`,`${prefix}kiss`,`${prefix}jail`,`${prefix}wame`,`${prefix}imgtourl`,`${prefix}tod`,`${prefix}truth`,`${prefix}dare`,`${prefix}family100`,`${prefix}caklontong`,`${prefix}tebakgambar`,`${prefix}apakah`,`${prefix}bisakah`,`${prefix}nilai`,`${prefix}kapankah`,`${prefix}trash`,`${prefix}hitler`,`${prefix}babi`,`${prefix}ganteng`,`${prefix}cantik`,`${prefix}getpp`,`${prefix}getsts`,`${prefix}slap`,`${prefix}hug`,`${prefix}pat`,`${prefix}groupinfo`,`${prefix}nhder`,`${prefix}randomkiss`,`${prefix}randomhug`,`${prefix}randomcry`,`${prefix}fetish`,`${prefix}husbu`,`${prefix}randomnekonime`,`${prefix}randomanime`,`${prefix}lewds`,`${prefix}loli`,`${prefix}malanime`,`${prefix}wallanime`,`${prefix}wait`,`${prefix}wait`,`${prefix}waifu`,`${prefix}xnxx`,`${prefix}hehe`,`${prefix}randomblowjob`,`${prefix}xxx`,`${prefix}getxxx`,`${prefix}xvideos`,`${prefix}getxvideos`];
             if (!isGroupMsg) return iluser.reply(message.from, mess.nongroup, message.id)
             if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, mess.nonadmin, message.id)
             try {
@@ -4344,7 +4185,7 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
             if (!isGroupMsg) return iluser.reply(message.from, mess.nongroup, message.id)
             if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, mess.nonadmin, message.id)
             const menu = body.slice(8);
-            const list = [`${prefix}brainly`,`${prefix}nulis`,`${prefix}nulis2`,`${prefix}nulis3`,`${prefix}wiki`,`${prefix}kbbi`,`${prefix}translate`,`${prefix}tr`,`${prefix}google`,`${prefix}totext`,`${prefix}hitung`,`${prefix}playstore`,`${prefix}apkpure`,`${prefix}shopee`,`${prefix}newstickerline`,`${prefix}ytsearch`,`${prefix}spek`,`${prefix}motor`,`${prefix}mobil`,`${prefix}alamat`,`${prefix}resep`,`${prefix}checkip`,`${prefix}checkip2`,`${prefix}jarak`,`${prefix}heroml`,`${prefix}jadwalbola`,`${prefix}waktu`,`${prefix}news`,`${prefix}covidindo`,`${prefix}covid`,`${prefix}infonomor`,`${prefix}resi`,`${prefix}kurs`,`${prefix}ceklokasi`,`${prefix}quran`,`${prefix}jadwalshalat`,`${prefix}tafsir`,`${prefix}infosurah`,`${prefix}listsurah`,`${prefix}stiker`,`${prefix}sfire`,`${prefix}slight`,`${prefix}ttp`,`${prefix}attp`,`${prefix}ttp2`,`${prefix}ttg`,`${prefix}memestiker`,`${prefix}findsticker`,`${prefix}sline`,`${prefix}video`,`${prefix}getvideo`,`${prefix}music`,`${prefix}getmusik`,`${prefix}asupan`,`${prefix}yt`,`${prefix}ytmp3`,`${prefix}lagu`,`${prefix}joox`,`${prefix}ig`,`${prefix}ig2`,`${prefix}tw`,`${prefix}tw2`,`${prefix}pin`,`${prefix}fb`,`${prefix}fb2`,`${prefix}tiktok`,`${prefix}tt`,`${prefix}smule`,`${prefix}starmaker`,`${prefix}igstory`,`${prefix}tomp3`,`${prefix}bass`,`${prefix}distord`,`${prefix}tts`,`${prefix}setvn`,`${prefix}v`,`${prefix}listvn`,`${prefix}wattpad`,`${prefix}wpread`,`${prefix}cerpen`,`${prefix}puisi`,`${prefix}kebalik`,`${prefix}creepyfact`,`${prefix}fakta`,`${prefix}cersex`,`${prefix}bacot`,`${prefix}bacotadd`,`${prefix}renungan`,`${prefix}pantun`,`${prefix}bucin`,`${prefix}katabijak`,`${prefix}katasenja`,`${prefix}katafiersa`,`${prefix}quotes`,`${prefix}hilih`,`${prefix}alay`,`${prefix}chord`,`${prefix}lirik`,`${prefix}zodiak`,`${prefix}zodiak2`,`${prefix}wall`,`${prefix}toimg`,`${prefix}textmaker`,`${prefix}gambar`,`${prefix}googleimage`,`${prefix}twtstalk`,`${prefix}tiktokstalk`,`${prefix}igstalk`,`${prefix}smulestalk`,`${prefix}phcomment`,`${prefix}quotemaker`,`${prefix}quoteit`,`${prefix}maps`,`${prefix}pokemon`,`${prefix}kucing`,`${prefix}anjing`,`${prefix}memeindo`,`${prefix}meme`,`${prefix}qrcode`,`${prefix}dadu`,`${prefix}koin`,`${prefix}cewe`,`${prefix}cowo`,`${prefix}ptlvid`,`${prefix}infogempa`,`${prefix}ssphone`,`${prefix}sspc`,`${prefix}springflow`,`${prefix}watersplash`,`${prefix}cloudy`,`${prefix}sketch`,`${prefix}threats`,`${prefix}glass`,`${prefix}greyscale`,`${prefix}invert`,`${prefix}invertgrey`,`${prefix}brightness`,`${prefix}sepia`,`${prefix}burik`,`${prefix}blurfry`,`${prefix}magik`,`${prefix}captcha`,`${prefix}kpop`,`${prefix}kue`,`${prefix}chalktext`,`${prefix}wooden-sign`,`${prefix}salju`,`${prefix}bioskop`,`${prefix}kalung`,`${prefix}gelang`,`${prefix}beach-sign`,`${prefix}bordir2`,`${prefix}blood2`,`${prefix}window`,`${prefix}snow-sign`,`${prefix}kapal`,`${prefix}pesawat`,`${prefix}jalan`,`${prefix}einstein`,`${prefix}lipstick`,`${prefix}typewriter`,`${prefix}graffiti`,`${prefix}graffiti2`,`${prefix}graffiti3`,`${prefix}tahta`,`${prefix}goreng`,`${prefix}carbon`,`${prefix}neon-sign`,`${prefix}karat`,`${prefix}kayu`,`${prefix}tato`,`${prefix}embun`,`${prefix}trumptwt`,`${prefix}silktext`,`${prefix}mymind`,`${prefix}coffee`,`${prefix}ukir`,`${prefix}smoketext`,`${prefix}kanna`,`${prefix}sarah`,`${prefix}resend`,`${prefix}film`,`${prefix}kadargay`,`${prefix}aiquote`,`${prefix}subreddit`,`${prefix}artinama`,`${prefix}pasangan`,`${prefix}nomorhoki`,`${prefix}shorturl`,`${prefix}readmore`,`${prefix}imgcompress`,`${prefix}nickepep`,`${prefix}wasted`,`${prefix}gdrive`,`${prefix}kiss`,`${prefix}jail`,`${prefix}wame`,`${prefix}imgtourl`,`${prefix}tod`,`${prefix}truth`,`${prefix}dare`,`${prefix}family100`,`${prefix}caklontong`,`${prefix}tebakgambar`,`${prefix}apakah`,`${prefix}bisakah`,`${prefix}nilai`,`${prefix}kapankah`,`${prefix}trash`,`${prefix}hitler`,`${prefix}babi`,`${prefix}ganteng`,`${prefix}cantik`,`${prefix}getpp`,`${prefix}getsts`,`${prefix}slap`,`${prefix}hug`,`${prefix}pat`,`${prefix}afk`,`${prefix}groupinfo`,`${prefix}nhder`,`${prefix}randomkiss`,`${prefix}randomhug`,`${prefix}randomcry`,`${prefix}fetish`,`${prefix}husbu`,`${prefix}randomnekonime`,`${prefix}randomanime`,`${prefix}lewds`,`${prefix}loli`,`${prefix}malanime`,`${prefix}wallanime`,`${prefix}wait`,`${prefix}wait`,`${prefix}waifu`,`${prefix}xnxx`,`${prefix}hehe`,`${prefix}randomblowjob`,`${prefix}xxx`,`${prefix}getxxx`,`${prefix}xvideos`,`${prefix}getxvideos`];
+            const list = [`${prefix}brainly`,`${prefix}nulis`,`${prefix}nulis2`,`${prefix}nulis3`,`${prefix}wiki`,`${prefix}kbbi`,`${prefix}translate`,`${prefix}tr`,`${prefix}google`,`${prefix}totext`,`${prefix}hitung`,`${prefix}playstore`,`${prefix}apkpure`,`${prefix}shopee`,`${prefix}newstickerline`,`${prefix}ytsearch`,`${prefix}spek`,`${prefix}motor`,`${prefix}mobil`,`${prefix}alamat`,`${prefix}resep`,`${prefix}checkip`,`${prefix}checkip2`,`${prefix}jarak`,`${prefix}heroml`,`${prefix}jadwalbola`,`${prefix}waktu`,`${prefix}news`,`${prefix}covidindo`,`${prefix}covid`,`${prefix}infonomor`,`${prefix}resi`,`${prefix}kurs`,`${prefix}ceklokasi`,`${prefix}quran`,`${prefix}jadwalshalat`,`${prefix}tafsir`,`${prefix}infosurah`,`${prefix}listsurah`,`${prefix}stiker`,`${prefix}sfire`,`${prefix}slight`,`${prefix}ttp`,`${prefix}attp`,`${prefix}ttp2`,`${prefix}ttg`,`${prefix}memestiker`,`${prefix}findsticker`,`${prefix}sline`,`${prefix}video`,`${prefix}getvideo`,`${prefix}music`,`${prefix}getmusik`,`${prefix}asupan`,`${prefix}yt`,`${prefix}ytmp3`,`${prefix}lagu`,`${prefix}joox`,`${prefix}ig`,`${prefix}ig2`,`${prefix}tw`,`${prefix}tw2`,`${prefix}pin`,`${prefix}fb`,`${prefix}fb2`,`${prefix}tiktok`,`${prefix}tt`,`${prefix}smule`,`${prefix}starmaker`,`${prefix}igstory`,`${prefix}tomp3`,`${prefix}bass`,`${prefix}distord`,`${prefix}tts`,`${prefix}setvn`,`${prefix}v`,`${prefix}listvn`,`${prefix}wattpad`,`${prefix}wpread`,`${prefix}cerpen`,`${prefix}puisi`,`${prefix}kebalik`,`${prefix}creepyfact`,`${prefix}fakta`,`${prefix}cersex`,`${prefix}bacot`,`${prefix}bacotadd`,`${prefix}renungan`,`${prefix}pantun`,`${prefix}bucin`,`${prefix}katabijak`,`${prefix}katasenja`,`${prefix}katafiersa`,`${prefix}quotes`,`${prefix}hilih`,`${prefix}alay`,`${prefix}chord`,`${prefix}lirik`,`${prefix}zodiak`,`${prefix}zodiak2`,`${prefix}wall`,`${prefix}toimg`,`${prefix}textmaker`,`${prefix}gambar`,`${prefix}googleimage`,`${prefix}twtstalk`,`${prefix}tiktokstalk`,`${prefix}igstalk`,`${prefix}smulestalk`,`${prefix}phcomment`,`${prefix}quotemaker`,`${prefix}quoteit`,`${prefix}maps`,`${prefix}pokemon`,`${prefix}kucing`,`${prefix}anjing`,`${prefix}memeindo`,`${prefix}meme`,`${prefix}qrcode`,`${prefix}dadu`,`${prefix}koin`,`${prefix}cewe`,`${prefix}cowo`,`${prefix}ptlvid`,`${prefix}infogempa`,`${prefix}ssphone`,`${prefix}sspc`,`${prefix}springflow`,`${prefix}watersplash`,`${prefix}cloudy`,`${prefix}sketch`,`${prefix}threats`,`${prefix}glass`,`${prefix}greyscale`,`${prefix}invert`,`${prefix}invertgrey`,`${prefix}brightness`,`${prefix}sepia`,`${prefix}burik`,`${prefix}blurfry`,`${prefix}magik`,`${prefix}captcha`,`${prefix}kpop`,`${prefix}kue`,`${prefix}chalktext`,`${prefix}wooden-sign`,`${prefix}salju`,`${prefix}bioskop`,`${prefix}kalung`,`${prefix}gelang`,`${prefix}beach-sign`,`${prefix}bordir2`,`${prefix}blood2`,`${prefix}window`,`${prefix}snow-sign`,`${prefix}kapal`,`${prefix}pesawat`,`${prefix}jalan`,`${prefix}einstein`,`${prefix}lipstick`,`${prefix}typewriter`,`${prefix}graffiti`,`${prefix}graffiti2`,`${prefix}graffiti3`,`${prefix}tahta`,`${prefix}goreng`,`${prefix}carbon`,`${prefix}neon-sign`,`${prefix}karat`,`${prefix}kayu`,`${prefix}tato`,`${prefix}embun`,`${prefix}trumptwt`,`${prefix}silktext`,`${prefix}mymind`,`${prefix}coffee`,`${prefix}ukir`,`${prefix}smoketext`,`${prefix}kanna`,`${prefix}sarah`,`${prefix}resend`,`${prefix}film`,`${prefix}kadargay`,`${prefix}aiquote`,`${prefix}subreddit`,`${prefix}artinama`,`${prefix}pasangan`,`${prefix}nomorhoki`,`${prefix}shorturl`,`${prefix}readmore`,`${prefix}imgcompress`,`${prefix}nickepep`,`${prefix}wasted`,`${prefix}gdrive`,`${prefix}kiss`,`${prefix}jail`,`${prefix}wame`,`${prefix}imgtourl`,`${prefix}tod`,`${prefix}truth`,`${prefix}dare`,`${prefix}family100`,`${prefix}caklontong`,`${prefix}tebakgambar`,`${prefix}apakah`,`${prefix}bisakah`,`${prefix}nilai`,`${prefix}kapankah`,`${prefix}trash`,`${prefix}hitler`,`${prefix}babi`,`${prefix}ganteng`,`${prefix}cantik`,`${prefix}getpp`,`${prefix}getsts`,`${prefix}slap`,`${prefix}hug`,`${prefix}pat`,`${prefix}groupinfo`,`${prefix}nhder`,`${prefix}randomkiss`,`${prefix}randomhug`,`${prefix}randomcry`,`${prefix}fetish`,`${prefix}husbu`,`${prefix}randomnekonime`,`${prefix}randomanime`,`${prefix}lewds`,`${prefix}loli`,`${prefix}malanime`,`${prefix}wallanime`,`${prefix}wait`,`${prefix}wait`,`${prefix}waifu`,`${prefix}xnxx`,`${prefix}hehe`,`${prefix}randomblowjob`,`${prefix}xxx`,`${prefix}getxxx`,`${prefix}xvideos`,`${prefix}getxvideos`];
             try {
                 if (list.includes(menu) == true) {
                   await getDB.enable(message.from, menu)
@@ -4381,19 +4222,6 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
                 } else iluser.reply(message.from, `reply dong tolol, media yang mau di resend`, message.id)
                 }
                 break
-        case prefix+'afk':{
-                const disable = await getDB.cek_disable(message.from, `${prefix}afk`);
-                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
-            if(isReg(obj)) return
-                await sleep(2000)
-                if (!isGroupMsg) return await iluser.reply(message.from, mess.nongroup, message.id)
-                //if (isAfkon) return await iluser.reply(message.from, `Fitur AFK telah diaktifkan sebelumnya.`, message.id)
-                const reason = body.slice(5)
-                addAfk(sender.id, time, reason)
-                await iluser.sendTextWithMentions(message.from, `@${sender.id} sekarang AFK\n*Alasan:* ${reason}`, message.id)
-                console.log(color(`SUCCESS | ${sender.id} Afk`, 'olive'))
-            }
-            break
 
         case prefix+'addpilot': 
             if (!isOwner) return
@@ -4676,10 +4504,8 @@ GIFT KUOTA LIMIT*
         case 'maksh':
         case 'thnk':
         case 'arigatou':
-        case '#terimakasih':
       return iluser.reply(message.from, `Sama-sama *${undefined, pushname}* 🙂`, message.id);
       break
-
         case prefix+'threats':{
             const disable = await getDB.cek_disable(message.from, `${prefix}threats`);
             if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -4702,7 +4528,7 @@ GIFT KUOTA LIMIT*
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
         }
-            break
+        break
         case prefix+'glass':{
             const disable = await getDB.cek_disable(message.from, `${prefix}glass`);
             if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -4725,7 +4551,7 @@ GIFT KUOTA LIMIT*
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
         }
-            break
+        break
         case prefix+'greyscale':{
             const disable = await getDB.cek_disable(message.from, `${prefix}greyscale`);
             if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -4770,7 +4596,7 @@ GIFT KUOTA LIMIT*
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
         }
-            break
+        break
         case prefix+'invertgrey':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}invertgrey`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -4792,7 +4618,7 @@ GIFT KUOTA LIMIT*
                 await iluser.reply(message.from, 'Format Salah!', message.id)
             }
         }
-            break
+        break
         case prefix+'brightness':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}brightness`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -5251,8 +5077,7 @@ Url: ${animekun.data.result.data[4].urlDownload} ${mess.iklan}`, message.id)
         }
     }
     }
-        break
-        case prefix+'takestick':
+    break
         case prefix+'take':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}take`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -5550,7 +5375,6 @@ Url: ${animekun.data.result.data[4].urlDownload} ${mess.iklan}`, message.id)
             var antlink = antilink.includes(chat.id)
             var antiporn = _antinsfw.includes(groupId)
            // var stprt = antisticker.includes(chat.id)
-            var antbad = antibadword.includes(chat.id)
             var grouppic = await iluser.getProfilePicFromServer(chat.id)
             if (grouppic == undefined) {
                  var pfp = errorurl
@@ -5561,10 +5385,7 @@ Url: ${animekun.data.result.data[4].urlDownload} ${mess.iklan}`, message.id)
 
 • Name : *${groupname}* 
 • Members : *${totalMem}*
-• Welcome Msg : ${welgrp ? '*ON*' : '*OFF*'}
-• Left Msg: ${leftgrp ? '*ON*' : '*OFF*'}
 • Anti Link : ${antlink ? '*ON*' : '*OFF*'}
-• Anti Badword : ${antbad ? '*ON*' : '*OFF*'}
 • Anti Porn : ${antiporn ? '*ON*' : '*OFF*'}
 • Group Description:
 ${desc}`)
@@ -5616,61 +5437,7 @@ ${desc}`)
             await iluser.sendTextWithMentions(message.from, `My master @${ownerNumber}`, message.id)
             //iluser.reply(message.from, 'Silahkan hubungi creator bot dengan cara yang sopan dan langsung ke poin pembahasan', message.id)
             break
-        case prefix+'resetbadword':
-            if(isReg(obj)) return
-                    if (isLimit(serial)) return 
-            
-                    await limitAdd(serial)
-                    if (!isGroupAdmins) return iluser.reply(message.from, mess.nonadmin, message.id)  
-                    if (!args.length === 1) return iluser.reply(message.from, `Masukkan nomornya, *GUNAKAN AWALAN 62*\ncontoh: #resetbadword 6285112554122 / ${prefix}resetbadword @member`, message.id) 
-                    const nomer = args[1]
-                    let text = nomer.replace(/[-\s+@c.us]/g,'')
-                    const cus = text + '@c.us'
-                        var found = false
-                        Object.keys(msgBadword).forEach((i) => {
-                            if(msgBadword[i].id == cus){
-                                found = i
-                            }
-                        })
-                        if (found !== false) {
-                            msgBadword[found].msg = 1;
-                            const result = 'DB Badword Spam has been reset'
-                            console.log(msgBadword[found])
-                            fs.writeFileSync('./lib/database/msgBadword.json',JSON.stringify(msgBadword));
-                            iluser.reply(message.from, result, from)
-                        } else {
-                                iluser.reply(message.from, `${monospace(`Di database ngga ada nomer itu dik`)}`, message.id)
-                        }
-                break
         // ON OFF
-        case `${prefix}autosticker`:
-            if(isReg(obj)) return
-            if (!isGroupMsg) return iluser.reply(message.from, mess.nongroup, message.id)
-            if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, mess.nonadmin, message.id)
-            //if (!isBotGroupAdmins) return iluser.reply(message.from, mess.botnonadmin, message.id)
-            if (args[1] == 'enable') {
-                //var cek = autostick.includes(chatId);
-                if(isautosticker){
-                    return iluser.reply(message.from, `AutoSticker\n\n*ALREADY ACTIVATED*`, message.id)
-                } else {
-                    autostick.push(groupId)
-                    fs.writeFileSync('./lib/database/autostick.json', JSON.stringify(autostick))
-                    iluser.reply(message.from, `AutoSticker\n\n*ACTIVATED*`, message.id)
-                }
-            } else if (args[1] == 'disable') {
-                //var cek = autostick.includes(chatId);
-                if(!isautosticker){
-                    return iluser.reply(message.from, `AutoSticker\n\n*ALREADY DEACTIVATED*`, message.id)
-                } else {
-                    let nixx = autostick.indexOf(groupId)
-                    autostick.splice(nixx, 1)
-                    fs.writeFileSync('./lib/database/autostick.json', JSON.stringify(autostick))
-                    iluser.reply(message.from, `AutoSticker\n\n*DEACTIVATED*`, message.id)
-                }
-            } else {
-                iluser.reply(message.from, `Pilih enable atau disable udin!`, message.id)
-            }
-            break
         case prefix+'antilink':
             if(isReg(obj)) return
             if (!isGroupMsg) return iluser.reply(message.from, mess.nongroup, message.id)
@@ -6079,63 +5846,6 @@ ${desc}`)
                 }
             }
             break 
-       /* case prefix+'antisticker':
-            if(isReg(obj)) return
-            if (!isGroupMsg) return iluser.reply(message.from, mess.nongroup, message.id)
-            if (!isGroupAdmins) return iluser.reply(message.from, mess.nonadmin, message.id)
-            if (!isBotGroupAdmins) return iluser.reply(message.from, mess.botnonadmin, message.id)
-            if (args[1] == 'enable') {
-                var cek = antisticker.includes(chatId);
-                if(cek){
-                    return iluser.reply(message.from, `ANTI SPAM STICKER\n\n*ALREADY ACTIVATED*`, message.id)
-                 } else {
-                    antisticker.push(chatId)
-                    fs.writeFileSync('./lib/database/antisticker.json', JSON.stringify(antisticker))
-                    iluser.reply(message.from, `\nANTI SPAM STICKER\n\n*ACTIVATED*`, message.id)
-                }
-            } else if (args[1] == 'disable') {
-                var cek = antisticker.includes(chatId);
-                if(cek){
-                    return iluser.reply(message.from, `*ANTI SPAM STICKER*\n\n*ALREADY DEACTIVATED*`, message.id) //if number already exists on database
-                } else {
-                    let nixx = antisticker.indexOf(chatId)
-                    antisticker.splice(nixx, 1)
-                    fs.writeFileSync('./lib/database/antisticker.json', JSON.stringify(antisticker))
-                    iluser.reply(message.from, `\nANTI SPAM STICKER\n\n*DEACTIVATED*`, message.id)
-                    limitAdd(serial)
-                }
-            } else {
-                iluser.reply(message.from, `Pilih enable atau disable udin!`, message.id)
-            }
-            break*/
-        case prefix+'antibadword':
-            if(isReg(obj)) return
-            if (!isGroupMsg) return iluser.reply(message.from, mess.nongroup, message.id)
-            if (!isGroupAdmins) return iluser.reply(message.from, mess.nonadmin, message.id)
-            if (!isBotGroupAdmins) return iluser.reply(message.from, mess.botnonadmin, message.id)
-            if (args[1] == 'enable') {
-                var cek = antibadword.includes(chatId);
-                if(cek){
-                    return iluser.reply(message.from, `ANTI BADWORD\n\n   *ALREADY ACTIVATED ON ${name}*`, message.id)
-                } else {
-                    antibadword.push(chatId)
-                    fs.writeFileSync('./lib/database/antibadword.json', JSON.stringify(antibadword))
-                    iluser.reply(message.from, `ANTI BADWORD\n\n   *ACTIVATED* `, message.id)
-                }
-            } else if (args[1] == 'disable') {
-                var cek = antibadword.includes(chatId);
-                if(!cek){
-                    return iluser.reply(message.from, `ANTI BADWORD\n\n   *ALREADY DEACTIVATED ON ${name}*`, message.id)
-                } else {
-                    let nixx = antibadword.indexOf(chatId)
-                    antibadword.splice(nixx, 1)
-                    fs.writeFileSync('./lib/database/antibadword.json', JSON.stringify(antibadword))
-                    iluser.reply(message.from, `ANTI BADWORD\n\n   *DEACTIVATED*`, message.id)
-                }
-            } else {
-                iluser.reply(message.from, `Pilih enable atau disable udin!`, message.id)
-            } 
-            break   
           case `${prefix}stylewriting`:{
             const disable = await getDB.cek_disable(message.from, `${prefix}stylewriting`);
             if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -7296,13 +7006,6 @@ ${mess.iklan}`, message.id)
                 iluser.sendText(ownerNumber, 'Artimimpi Error : ' + err)
            }
             break
-    case prefix+'chatpremium':
-        if (!isOwner) return await iluser.reply(message.from, `Perintah ini hanya bisa digunakan oleh super owner bot`, message.id)
-        const msgny = body.slice(11)
-        const pngm = await iluser.getHostNumber(adminNumber)
-        iluser.sendText(pngm, `FROM OWNER BOT: ${serial.replace(/[@c.us]/g, '')}\n\n${msgny}\n\n\n*iluser_BOT*`)
-        await iluser.reply(message.from, `Sukses chat user premium`, message.id)
-        break
     case prefix+'carbon':
             if(isReg(obj)) return         
             if (isLimit(serial)) return
@@ -8068,7 +7771,7 @@ break
             const allChats = await iluser.getAllChatIds()
             const allGroups = await iluser.getAllGroups()
             for (let gclist of allGroups) {
-                await iluser.sendText(gclist.contact.id, `Bot sedang melakukan pembersihan rutin\ntotal chat: ${allChats.length}\n\nUser premium bisa langsung menambahkan bot dengan perintah .join`)
+                await iluser.sendText(gclist.contact.id, `Bot sedang melakukan pembersihan rutin\ntotal chat: ${allChats.length}\n\nUser premium bisa langsung menambahkan bot dengan perintah ${prefix}join`)
                 await sleep(2000)
                 await iluser.leaveGroup(gclist.contact.id)
                 await sleep(1000)
@@ -8171,7 +7874,7 @@ break
             if (!isGroupMsg) return iluser.reply(message.from, mess.nongroup, message.id)
             if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, mess.nonadmin, message.id)
             if (!isBotGroupAdmins) return iluser.reply(message.from, mess.botnonadmin, message.id)
-            if(!isOwner) return iluser.reply(message.from, `Promote manual ae ngab`, message.id)
+            //if(!isOwner) return iluser.reply(message.from, `Promote manual ae ngab`, message.id)
             if (!quotedMsg) {
                 if (mentionedJidList.length != 1) return iluser.reply(message.from, 'Yang mau di promote siapa tol?', message.id)
             if (groupAdmins.includes(mentionedJidList[0])) return await iluser.reply(message.from, 'Target sudah menjadi admin [Already Admin]', message.id)
@@ -8577,21 +8280,22 @@ break
                     break
         case prefix+'join':
             await sleep(1000)
-            if (!isPremium) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nSilahkan menjadi user premium jika ingin menambahkan bot ke grupmu. cek fitur premium di .premium', message.id)
-            if (!isOwner) return await iluser.reply(message.from, 'Kirim linknya kesini kemudian konfirmasi ke admin bot.', message.id)
+            if (!isPremium) return iluser.reply(message.from, `⛔ *AKSES DI TOLAK* ⛔\n\nSilahkan menjadi user premium jika ingin menambahkan bot ke grupmu. cek fitur premium di ${prefix}premium`, message.id)
+            //if (!isOwner) return await iluser.reply(message.from, 'Kirim linknya kesini kemudian konfirmasi ke admin bot.', message.id)
             if (isGruplimit(serial)) return iluser.reply(message.from, `Limit join grup sudah mencapai batas`, message.id)
            // if (isPremium) return iluser.reply(message.from, '⛔ *AKSES DI TOLAK* ⛔\n\nSilahkan hubungi creator bot untuk memasukkan bot secara manual', message.id)
-            if (args.length === 1) return iluser.reply(message.from, 'Contoh .join https://chat.whatsapp.com/xnxx', message.id)
+            if (args.length === 1) return iluser.reply(message.from, `Contoh ${prefix}join https://chat.whatsapp.com/xnxx`, message.id)
             const link = body.slice(6)
             const tGr = await iluser.getAllGroups()
-            const minMem = 2
+            const minMem = 10
             const isLink = link.match(/(https:\/\/chat.whatsapp.com)/gi)
             const check = await iluser.inviteInfo(link)
             if (!isLink) return iluser.reply(message.from, 'Ini link? 👊🤬', message.id)
             if (tGr.length > 256) return iluser.reply(message.from, 'Maaf jumlah group sudah maksimal!', message.id)
             if (check.size < minMem) return iluser.reply(message.from, 'Di bawah 10 member, bot tidak bisa masuk', message.id)
             if (check.status === 200) {
-                await sleep(3000)
+                await iluser.reply(message.from, 'Bot akan join dalam waktu 10 detik', message.id)
+                await sleep(10000)
                 await iluser.joinGroupViaLink(link).then(() => iluser.reply(message.from, 'Joined!', message.id))
                 await GruplimitAdd(serial)
                 await iluser.reply(message.from, `1 limit join grup terpakai`, message.id)
@@ -8732,7 +8436,7 @@ break
                     })
                 }}
                 var oz = new os_func();
-                oz.execCommand('kontol').then(res=> {
+                oz.execCommand('node --harmony index.js').then(res=> {
                 }).catch(err=> {
                     console.log("os >>>", err);
                 })
@@ -8969,7 +8673,7 @@ break
             if(isGroupMsg){
                 iluser.sendText(ownerNumber, `*[BUG REPORT]*\n*WAKTU* : ${time}\nNO PENGIRIM : wa.me/${sender.id.match(/\d+/g)}\nGroup : ${formattedTitle}\n\n${bug}`)
                 sleep(2000)
-                iluser.reply(message.from, 'Masalah telah di laporkan ke owner BOT, laporan palsu/main2 akan di blokir bot!' , message.id)
+                iluser.reply(message.from, 'Masalah telah di laporkan ke owner BOT, laporan palsu/main2 akan di blokir bot!', message.id)
             }else{
                 iluser.sendText(ownerNumber, `*[BUG REPORT]*\n*WAKTU* : ${time}\nNO PENGIRIM : wa.me/${sender.id.match(/\d+/g)}\n\n${bug}`)
                 sleep(2000)
@@ -9030,30 +8734,10 @@ break
         case prefix+'verify':
         case prefix+'register':
         case prefix+'daftar':
-        case '/verif':
-        case '/verify':
-        case '/register':
-        case '/daftar':
-        case '!verif':
-        case '!verify':
-        case '!register':
-        case '!daftar':
-        case '#verif':
-        case '#verify':
-        case '#register':
-        case '#daftar':
-        case '@verif':
-        case '@verify':
-        case '@register':
-        case '@daftar':
-        case '-verif':
-        case '-verify':
-        case '-register':
-        case '-daftar':
-        case '_verif':
-        case '_verify':
-        case '_register':
-        case '_daftar':
+        case prf+'verif':
+        case prf+'verify':
+        case prf+'register':
+        case prf+'daftar':
            // await sleep(2000)
             const nonye = sender.id
             const pporang = await iluser.getProfilePicFromServer(sender.id)
@@ -10900,107 +10584,6 @@ case prefix+'simi':{
                 }
             })
         }
-            break
-        // Level [BETA] by Slavyan
-            case prefix+'level':
-                // if (!isOwner) iluser.reply(message.from, 'Fitur ini di nonaktifkan oleh developer bot.', message.id)
-            /*    if(isReg(obj)) return
-                //if (!isLevelingOn) return await iluser.reply(from, `Leveling system not activated`, id)
-                if (!isGroupMsg) return await iluser.reply(from, `hanya di dalam grup`, id)
-                const userLevel = level.getLevelingLevel(sender.id, _level)
-                const userXp = level.getLevelingXp(sender.id, _level)
-                const ppLink = await iluser.getProfilePicFromServer(sender.id)
-                if (ppLink === undefined) {
-                    var pepe = ppdepresi
-                } else {
-                    pepe = ppLink
-                }
-                const requiredXp = 5 * Math.pow(userLevel, 2) + 50 * userLevel + 100
-                const rank = new canvas.Rank()
-                    .setAvatar(pepe)
-                    .setLevel(userLevel)
-                    .setLevelColor('#ffa200', '#ffa200')
-                    .setRank(Number(level.getUserRank(sender.id, _level)))
-                    .setCurrentXP(userXp)
-                    .setOverlay('#000000', 100, false)
-                    .setRequiredXP(requiredXp)
-                    .setProgressBar('#ffa200', 'COLOR')
-                    .setBackground('COLOR', '#000000')
-                    .setUsername(pushname)
-                    .setDiscriminator(sender.id.substring(6, 10))
-                rank.build()
-                    .then(async (buffer) => {
-                        canvas.write(buffer, `${sender.id}_card.png`)
-                        await iluser.sendFile(from, `${sender.id}_card.png`, `${sender.id}_card.png`, '', id)
-                        fs.unlinkSync(`${sender.id}_card.png`)
-                    })
-                    .catch(async (err) => {
-                        console.error(err)
-                        await iluser.reply(from, 'Error!', id)
-                    }) 
-            break
-            case prefix+'lb':
-            case prefix+'leaderboard':
-                //if (!isOwner) iluser.reply(message.from, 'Fitur ini di nonaktifkan oleh developer bot.', message.id)
-               { if(isReg(obj)) return
-                //if (!isLevelingOn) return await iluser.reply(from, `Leveling system not activated`, id)
-                if (!isGroupMsg) return await iluser.reply(from, `Hanya bisa di dalam grup`, id)
-                if (!isGroupAdmins && !isOwner) return iluser.reply(message.from, mess.nonadmin, message.id)
-                const resp = _level
-                _level.sort((a, b) => (a.xp < b.xp) ? 1 : -1)
-                let leaderboard = '-----[ *LEADERBOARD* ]----\n\n'
-                try {
-                    for (let i = 0; i < 10; i++) {
-                        var roles = 'Copper V'
-                        if (resp[i].level >= 5) {
-                            roles = 'Copper IV'
-                        } else if (resp[i].level >= 10) {
-                            roles = 'Copper III'
-                        } else if (resp[i].level >= 15) {
-                            roles = 'Copper II'
-                        } else if (resp[i].level >= 20) {
-                            roles = 'Copper I'
-                        } else if (resp[i].level >= 25) {
-                            roles = 'Silver V'
-                        } else if (resp[i].level >= 30) {
-                            roles = 'Silver IV'
-                        } else if (resp[i].level >= 35) {
-                            roles = 'Silver III'
-                        } else if (resp[i].level >= 40) {
-                            roles = 'Silver II'
-                        } else if (resp[i].level >= 45) {
-                            roles = 'Silver I'
-                        } else if (resp[i].level >= 50) {
-                            roles = 'Gold V'
-                        } else if (resp[i].level >= 55) {
-                            roles = 'Gold IV'
-                        } else if (resp[i].level >= 60) {
-                            roles = 'Gold III'
-                        } else if (resp[i].level >= 65) {
-                            roles = 'Gold II'
-                        } else if (resp[i].level >= 70) {
-                            roles = 'Gold I'
-                        } else if (resp[i].level >= 75) {
-                            roles = 'Platinum V'
-                        } else if (resp[i].level >= 80) {
-                            roles = 'Platinum IV'
-                        } else if (resp[i].level >= 85) {
-                            roles = 'Platinum III'
-                        } else if (resp[i].level >= 90) {
-                            roles = 'Platinum II'
-                        } else if (resp[i].level >= 95) {
-                            roles = 'Platinum I'
-                        } else if (resp[i].level >= 100) {
-                            roles = 'Exterminator'
-                        }
-                        leaderboard += `${i + 1}. wa.me/${_level[i].id.replace('@c.us', '')}\n➸ *XP*: ${_level[i].xp} *Level*: ${_level[i].level}\n➸ *Role*: ${roles}\n\n`
-                    }
-                    await iluser.reply(from, leaderboard, id)
-                } catch (err) {
-                    console.error(err)
-                    await iluser.reply(from, `Tidak memenuhi kriteria`, id)
-                }
-            } */
             break
             default:
             //if (!isGroupMsg)
