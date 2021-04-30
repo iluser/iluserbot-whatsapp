@@ -3,7 +3,7 @@ var getDB = require('./db');
 const cron = require('node-cron')
 const color = require('./lib/color')
 const fs = require('fs')
-const headless = false
+const headless = true
 const figlet = require('figlet')
 const lolcatjs = require('lolcatjs')
 //const options = require('./options')
@@ -18,9 +18,9 @@ require('./lib/database/premium.json')
 nocache('./lib/database/premium.json', module => console.log(`'${module}' Updated!`))
 
 const settings = JSON.parse(fs.readFileSync('./lib/database/setting.json'))
-const adminNumber = JSON.parse(fs.readFileSync('./lib/database/admin.json'))
 const setting = JSON.parse(fs.readFileSync('./lib/database/setting.json'))
-const isWhite = (chatId) => adminNumber.includes(chatId) ? true : false
+let _premium = JSON.parse(fs.readFileSync('./lib/database/premium.json'))
+const isWhite = (chatId) => _premium.includes(chatId) ? true : false
 
 let { 
     limitCount,
@@ -54,7 +54,7 @@ const start = async (iluser = new Client()) => {
         // Force it to keep the current session
         iluser.onStateChanged((state) => {
             console.log('[ILUSER STATE]', state)
-            iluser.sendText('6283142933894@c.us', 'BOT STATE '+ state)
+            //iluser.sendText('6283142933894@c.us', 'BOT STATE '+ state)
             if (state === 'CONFLICT' || state === 'UNLAUNCHED') iluser.forceRefocus()
         })
         // listening on message
@@ -64,7 +64,6 @@ const start = async (iluser = new Client()) => {
             .then((msg) => {
                 if (msg >= 700) {
                     console.log('[ILUSER STATE]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
-                    iluser.sendText('6283142933894@c.us', `cuting *${msg}* message cache...`)
                     iluser.cutMsgCache()
                 }
             })
@@ -205,7 +204,6 @@ let options = {
   autoRefresh: true,
   restartOnCrash: start,
   cacheEnabled: false,
-  licenseKey: '76E8C5E5-CEE3478F-9F435776-BE83B5EE',
   //executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
   useChrome: true,
   //stickerServerEndpoint: false,
@@ -224,7 +222,7 @@ let options = {
 }
 
 let options1 = {
-  sessionId: 'ilwan2',
+  sessionId: 'evan',
   headless: headless,
   qrRefreshS: 20,
   qrTimeout: 0,
@@ -232,7 +230,6 @@ let options1 = {
   autoRefresh: true,
   restartOnCrash: start,
   cacheEnabled: false,
-  licenseKey: '76E8C5E5-CEE3478F-9F435776-BE83B5EE',
   //executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
   useChrome: true,
   //stickerServerEndpoint: false,
@@ -254,6 +251,7 @@ create(options)
     .then(async(iluser) => {start(iluser)})
     .catch((error) => console.log(error))
 
-create(options1)
+ create(options1)
     .then(async(iluser) => {start(iluser)})
     .catch((error) => console.log(error))
+
