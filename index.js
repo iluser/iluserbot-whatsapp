@@ -221,7 +221,7 @@ let options = {
   ]
 }
 
-let options1 = {
+/*let options1 = {
   sessionId: 'evan',
   headless: headless,
   qrRefreshS: 20,
@@ -245,13 +245,13 @@ let options1 = {
     '--disk-cache-size=0',
     '--disable-gl-drawing-for-tests'
   ]
-}
+} */
 
 create(options)
     .then(async(iluser) => {start(iluser)})
     .catch((error) => console.log(error))
 
- create(options1)
+ /*create(options1)
     .then(async(iluser) => {start(iluser)})
-    .catch((error) => console.log(error))
+    .catch((error) => console.log(error)) */
 
