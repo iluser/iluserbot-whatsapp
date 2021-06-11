@@ -18,9 +18,9 @@ require('./lib/database/premium.json')
 nocache('./lib/database/premium.json', module => console.log(`'${module}' Updated!`))
 
 const settings = JSON.parse(fs.readFileSync('./lib/database/setting.json'))
+const premium = JSON.parse(fs.readFileSync('./lib/database/premium.json'))
 const setting = JSON.parse(fs.readFileSync('./lib/database/setting.json'))
-let _premium = JSON.parse(fs.readFileSync('./lib/database/premium.json'))
-const isWhite = (chatId) => _premium.includes(chatId) ? true : false
+const isWhite = (chatId) => premium.includes(chatId) ? true : false
 
 let { 
     limitCount,
@@ -54,7 +54,7 @@ const start = async (iluser = new Client()) => {
         // Force it to keep the current session
         iluser.onStateChanged((state) => {
             console.log('[ILUSER STATE]', state)
-            //iluser.sendText('6283142933894@c.us', 'BOT STATE '+ state)
+           // iluser.sendText('6283142933894@c.us', 'BOT STATE '+ state)
             if (state === 'CONFLICT' || state === 'UNLAUNCHED') iluser.forceRefocus()
         })
         // listening on message
@@ -62,7 +62,7 @@ const start = async (iluser = new Client()) => {
 
         iluser.getAmountOfLoadedMessages()
             .then((msg) => {
-                if (msg >= 700) {
+                if (msg >= 300) {
                     console.log('[ILUSER STATE]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
                     iluser.cutMsgCache()
                 }
@@ -70,9 +70,6 @@ const start = async (iluser = new Client()) => {
         require('./iluser.js')(iluser, message)
     }))
 
-  /*  const allChatz = await iluser.getAllChats(withNewMessageOnly = false)
-    const allGroups = await iluser.getAllGroups()
-    for (let change of allGroups) { */
     iluser.onGlobalParticipantsChanged(async(change) => {
         console.log(change)
         //welcome(iluser, change)
@@ -199,16 +196,20 @@ let options = {
   sessionId: 'ilwan',
   headless: headless,
   qrRefreshS: 20,
-  qrTimeout: 0,
-  authTimeout: 0,
+  qrTimeout: 60,
+  authTimeout: 60,
   autoRefresh: true,
   restartOnCrash: start,
+  blockAssets: true,
+	blockCrashLogs: true,
+  bypassCSP: true,
   cacheEnabled: false,
+  //licenseKey: '76E8C5E5-CEE3478F-9F435776-BE83B5EE',
   //executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
-  useChrome: true,
   //stickerServerEndpoint: false,
-  killProcessOnBrowserClose: false,
-  throwErrorOnTosBlock: true,
+  killProcessOnBrowserClose: true,
+  throwErrorOnTosBlock: false,
+  useChrome: true,
   chromiumArgs: [
     '--no-sandbox',
     '--disable-setuid-sandbox',
@@ -217,41 +218,12 @@ let options = {
     '--disable-application-cache',
     '--disable-offline-load-stale-cache',
     '--disk-cache-size=0',
-    '--disable-gl-drawing-for-tests'
+    '--disable-gl-drawing-for-tests',
+    '--ignore-certificate-errors',
+    '--single-process'
   ]
 }
-
-/*let options1 = {
-  sessionId: 'evan',
-  headless: headless,
-  qrRefreshS: 20,
-  qrTimeout: 0,
-  authTimeout: 0,
-  autoRefresh: true,
-  restartOnCrash: start,
-  cacheEnabled: false,
-  //executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
-  useChrome: true,
-  //stickerServerEndpoint: false,
-  killProcessOnBrowserClose: false,
-  throwErrorOnTosBlock: true,
-  chromiumArgs: [
-    '--no-sandbox',
-    '--disable-setuid-sandbox',
-    '--aggressive-cache-discard',
-    '--disable-cache',
-    '--disable-application-cache',
-    '--disable-offline-load-stale-cache',
-    '--disk-cache-size=0',
-    '--disable-gl-drawing-for-tests'
-  ]
-} */
 
 create(options)
     .then(async(iluser) => {start(iluser)})
     .catch((error) => console.log(error))
-
- /*create(options1)
-    .then(async(iluser) => {start(iluser)})
-    .catch((error) => console.log(error)) */
-
