@@ -59,6 +59,7 @@ const emoji = new EmojiAPI();
 const print = (msg) => {
 	return console.log(msg)
 }
+const wikiPedia = require("@dada513/wikipedia-search")
 const { getUser, getPost, searchUser } = require('./lib/Insta')
 const urlShortener = require('./lib/shortener')
 const premium = require('./lib/premium.js')
@@ -79,9 +80,9 @@ const format = sizeFormatter({
     keepTrailingZeroes: false,
     render: (literal, symbol) => `${literal} ${symbol}B`,
 })
-const { IgApiClient } = require('instagram-private-api')
+const { IgApiClient } = require('instagram-private-api');
 const ig = new IgApiClient();
-const IgMediaID = require('instagram-id-to-url-segment')
+const IgMediaID = require('instagram-id-to-url-segment');
 
 // LOAD FILE
 //let respon = JSON.parse(fs.readFileSync('./respon.json'))
@@ -170,7 +171,7 @@ const {
     facebook,
     smule,
     starmaker,
-    twitter    } = require('./lib/downloader')
+    twitter} = require('./lib/downloader')
 
 const {
     stickerburn,
@@ -192,10 +193,6 @@ let {
     tobzkey,
     mtc: mtcState
     } = setting
-
-
-
-
 
 var timeStart = Date.now() / 1000
 moment.tz.setDefault('Asia/Jakarta').locale('id')
@@ -1044,6 +1041,16 @@ function base64_encode(file) {
         }
         }
         break
+        case 'wiki':{
+            if(isReg(obj)) return         
+            if (isLimit(serial)) return
+            if (args.length === 1) return await iluser.reply(from, 'Mau cari apa tol?', id)
+            const wikip = await wikiPedia.search(`${body.slice(5)}`)
+			const wikis = await axios.get(`https://id.wikipedia.org/w/api.php?format=json&action=query&prop=extracts&exintro&explaintext&redirects=1&pageids=${wikip[0].pageid}`)
+			const getData = Object.keys(wikis.data.query.pages)
+			await iluser.reply(from, wikis.data.query.pages[getData].extract, id).catch(async () => { await iluser.reply(from, `Data tidak ditemulan`, id) })
+        }
+            break
         case prefix+'wiki':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}wiki`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
@@ -1062,6 +1069,7 @@ function base64_encode(file) {
             }
         }catch (err) {
                 console.log(color('FAILED | wiki', 'red'))
+                iluser.reply(from, `Pencarin kata kunci ${queryz} tidak ditemukan`, id)
                 iluser.sendText(ownerNumber, `Error wiki:\n${err}`)}
             }
             break 
@@ -1105,7 +1113,7 @@ function base64_encode(file) {
             translate(quoteText, args[1])
                 .then((result) => iluser.reply(message.from, result, message.id))
                 .catch(() => iluser.sendText(message.from, 'Error!'))
-                console.log(color('FAILED | kbbi', 'red'))
+                console.log(color('FAILED | tr', 'red'))
             }
         }
         break
@@ -1223,6 +1231,7 @@ function base64_encode(file) {
             }
         }
         break
+
         //STICKER CREATOR 
         case prf+'sticker':
         case prf+'stiker':
@@ -1257,7 +1266,7 @@ function base64_encode(file) {
                   modifExif(buffer, id, async (res) => {
                     mediaData = res.toString('base64')
                     await iluser.sendRawWebpAsSticker(message.from, mediaData, message.id)
-                    await iluser.reply(message.from, `${mess.iklann}`, message.id)
+                    //await iluser.reply(message.from, `${mess.iklann}`, message.id)
                   })
                 })
               })
@@ -1277,7 +1286,7 @@ function base64_encode(file) {
                   modifExif(buffer, id, async (res) => {
                     mediaData = res.toString('base64')
                     await iluser.sendRawWebpAsSticker(message.from, mediaData, message.id)
-                    await iluser.reply(message.from, `${mess.iklann}`, message.id)
+                    //await iluser.reply(message.from, `${mess.iklann}`, message.id)
                   })
                 })
               })
@@ -1285,30 +1294,30 @@ function base64_encode(file) {
               const mediaData = await decryptMedia(message)
               if (Buffer.byteLength(mediaData) >= 6186598.4) return iluser.reply(message.from, `sizenya terlalu gede sayang, dd gakuat :( max 5,9mb`, message.id)
               modifWebp(id, mediaData).then(res => {
-                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Maaf, kualitas tidak didukung untuk video tsb', message.id))
+                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Gagal konversi!\n\nPerpendek durasi video atau kurangi resolusi video', message.id))
               })
             } else if (quotedMsg && quotedMsgObj.mimetype == 'image/gif') {
               const mediaData = await decryptMedia(quotedMsg)
               if (Buffer.byteLength(mediaData) >= 6186598.4) return iluser.reply(message.from, `sizenya terlalu gede sayang, dd gakuat :( max 5,9mb`, message.id)
               modifWebp(id, mediaData).then(res => {
-                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Maaf, kualitas tidak didukung untuk video tsb', message.id))
+                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Gagal konversi!\n\nPerpendek durasi video atau kurangi resolusi video', message.id))
               })
             } else if (isMedia && mimetype == 'video/mp4') {
               const mediaData = await decryptMedia(message)
               if (Buffer.byteLength(mediaData) >= 6186598.4) return iluser.reply(message.from, `sizenya terlalu gede sayang, dd gakuat :( max 5,9mb`, message.id)
               modifWebp(id, mediaData).then(res => {
-                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Maaf, kualitas tidak didukung untuk video tsb', message.id))
+                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Gagal konversi!\n\nPerpendek durasi video atau kurangi resolusi video', message.id))
               })
             } else if (quotedMsg && quotedMsgObj.mimetype == 'video/mp4') {
               const mediaData = await decryptMedia(quotedMsg)
               if (Buffer.byteLength(mediaData) >= 6186598.4) return iluser.reply(message.from, `sizenya terlalu gede sayang, dd gakuat :( max 5,9mb`, message.id)
               modifWebp(id, mediaData).then(res => {
-                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Maaf, kualitas tidak didukung untuk video tsb', message.id))
+                iluser.sendRawWebpAsSticker(message.from, res.toString('base64'), true).catch(() => iluser.reply(message.from, 'Gagal konversi!\n\nPerpendek durasi video atau kurangi resolusi video', message.id))
               })
             console.log(color('SUCCESS | sending sticker', 'olive'))
             //iluser.reply(message.from, `${mess.iklann}`, message.id)
             }else {
-                await iluser.reply(message.from, `Kirim atau tag media yang akan jadi stiker. tolol`, message.id)
+                await iluser.reply(message.from, `Kirim atau tag media yang akan dijadikan stiker dong tol!`, message.id)
             }
         }catch (error) {
             //throw new Error(error.message)
@@ -2045,7 +2054,7 @@ function base64_encode(file) {
                 const { collector, headers } = await TikTokScraper.user(rand, {number: 0, sessionList: ['sid_tt=96c19fdafeba49a399cf93e52d7ba51d;']  });
                 if(collector.length == 0)
                 {
-                    await iluser.reply(message.from, "user tidak ditemukan atau tidak ditemukan video." , message.id)
+                    await iluser.reply(message.from, `Tidak ditemukan video pada user *${rand}*` , message.id)
                     console.log(`FAILED | send asupan, user/video not found ${rand}`)
                 }else{
                     const { videoUrl, webVideoUrl } = getRandomText(collector) 
@@ -2174,14 +2183,14 @@ function base64_encode(file) {
                     limitAdd(serial)
                 } catch (error) {
                     console.log(color('FAILED | Ytmp3', 'red'))
-                    await iluser.reply(message.from, "Error!", message.id)
+                    await iluser.reply(message.from, "Error\n\nSilahkan coba lagi, jika tetap error hubungi admin bot.", message.id)
                     await iluser.sendText(ownerNumber, `Error Ytmp3:\n${error}`)
                     await browser.close()
                 }
             } catch (error) {
                 console.log(color('FAILED | YouTube audio downloader', 'red'))
                 iluser.sendText(ownerNumber, `Error YouTube audio downloader:\n${error}`)
-                iluser.reply(message.from, 'Error', message.id)
+                iluser.reply(message.from, 'Error server', message.id)
             }
         }
         break
@@ -2211,7 +2220,7 @@ function base64_encode(file) {
             if (isLimit(serial)) return
             if (args.length == 1) return iluser.reply(message.from, `Contoh: ${prefix}play resah jadi luka`, message.id)
             try {
-                const serplay = body.slice(6)
+                const serplay = `${encodeURIComponent(body.slice(6))}`
                 const webplay = await axios.get(`https://api.vhtear.com/ytmp3?query=${serplay}&apikey=${vhtearkey}`)
                     if (Number(webplay.data.result.size.split(' MB')[0]) >= 30.00) return iluser.sendFileFromUrl(message.from, webplay.data.result.image, `iluser_BOT_thumb.jpg`, `sizenya terlalu gede sayang, dd gakuat :(\n\nunduh manual melalui link di bawah ini\n${webplay.data.result.mp3} [ *${webplay.data.result.size}* ]\n\n*Judul* : ${webplay.data.result.title}\n*Durasi* : ${webplay.data.result.duration} ${mess.iklan}`, message.id)
                     const captplay = `*YOUTUBE PLAY*\n\n• *Judul* : ${webplay.data.result.title}\n• *Durasi* : ${webplay.data.result.duration}\n• *Exp* : ${webplay.data.result.ext}`
@@ -2377,23 +2386,6 @@ function base64_encode(file) {
             }
         }
             break
-        case prefix+'ig':{
-                const disable = await getDB.cek_disable(message.from, `${prefix}ig`);
-                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
-            if(isReg(obj)) return
-            if (isLimit(serial)) return 
-            if (args.length == 1) return iluser.reply(message.from, `Linknya mana`, message.id)
-            if (!args[1].includes('instagram.com')) return iluser.reply(message.from, `urlnya bukan dari instagram itu tol`, message.id)
-            try {
-                const webplay = await axios.get(`https://api.lolhuman.xyz/api/instagram?apikey=${lolkey}&url=${body.slice(4)}`)
-                await iluser.sendFileFromUrl(message.from, webplay.data.result, ``, `${mess.iklann}`, message.id).catch(() => iluser.reply(message.from, 'Error bang', message.id))
-                    limitAdd(serial)
-            } catch (err) {
-                iluser.sendText(ownerNumber, 'Error instagram : '+ err)
-                iluser.reply(message.from, 'Error bang\n\nGunakan alternatif ig2/ig3.', message.id)
-            }
-        }
-        break
         case prefix+'ig2': 
         case prefix+'instagram2':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}ig2`);
@@ -2424,8 +2416,12 @@ function base64_encode(file) {
             })
         }
         break
-        case prefix+'ig3':
+        case prefix+'ig':
       try {
+        const disable = await getDB.cek_disable(message.from, `${prefix}ig`);
+        if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
+        if(isReg(obj)) return
+        if (isLimit(serial)) return
         const username = 'botwa_testing';
         const password = 'Anjay123';
         ig.state.generateDevice(username);
@@ -2434,7 +2430,7 @@ function base64_encode(file) {
         const link = message.body.slice(4);
         const code = link.split('/')[4];
         if (code.length > 19) {
-          iluser.sendText(message.from,'Tidak bisa mengunduh media di akun terkunci/private account');
+          iluser.reply(message.from,'Tidak bisa mengunduh media di akun terkunci/private account', message.id);
           console.log('FAILED | because PRIVATE account INSTAGRAM');
         }
         else{
@@ -2444,15 +2440,15 @@ function base64_encode(file) {
             const user = post.items[0].user.username;
             if (media_type == 8) {
             const slide = post.items[0].carousel_media;
-            iluser.reply(message.from, 'From @'+user+'\nTerdeteksi ' + slide.length + ' media...', id)
+            iluser.reply(message.from, 'From @'+user+'\nTerdeteksi ' + slide.length + ' media...', message.id)
             for (var i = 0; i < slide.length; i++) {
               var ricek = slide[i].media_type;
               if(ricek == 2){
                 let rnd = randomName(30) + '.mp4';
                 var video = slide[i].video_versions[0].url;
                 try{
-                  await download(video, './temp/' + rnd, function(){
-                  const a = base64_encode('./temp/' + rnd);
+                  await download(video, './dbig/' + rnd, function(){
+                  const a = base64_encode('./dbig/' + rnd);
                   var base64str = 'data:video/mp4'+";base64,"+a.toString()
                   iluser.sendFile(message.from,base64str,rnd, `${mess.iklann}`, id);
                 });
@@ -2463,8 +2459,8 @@ function base64_encode(file) {
                 let rndi = randomName(30) + '.png';
                 var foto = slide[i].image_versions2.candidates[0].url;
                 try{
-                  await download(foto, './temp/' + rndi, function(){
-                  const a = base64_encode('./temp/' + rndi);
+                  await download(foto, './dbig/' + rndi, function(){
+                  const a = base64_encode('./dbig/' + rndi);
                   var base64str = 'data:image/jpeg'+";base64,"+a.toString()
                   iluser.sendImage(message.from,base64str,rndi,`${mess.iklann}`, id);
                 });
@@ -2474,16 +2470,18 @@ function base64_encode(file) {
               }
             }
             console.log('SUCCESS | download media from INSTAGRAM');
+            limitAdd(serial)
             }else if(media_type == 2){
             var rnd = randomName(30) + '.mp4';
             var video = post.items[0].video_versions[0].url;
             var durasi = post.items[0].video_duration;
             try{
-              await download(video, './temp/' + rnd, function(){
-              const a = base64_encode('./temp/' + rnd);
+              await download(video, './dbig/' + rnd, function(){
+              const a = base64_encode('./dbig/' + rnd);
               var base64str = 'data:video/mp4'+";base64,"+a.toString()
               iluser.sendFile(message.from,base64str,rnd, `sukses download!\nFrom : @` + user + '\nDuration : ' + durasi + `s ${mess.iklan}`, id);
               console.log('SUCCESS | download media from INSTAGRAM');
+              limitAdd(serial)
             });
             } catch(err){
               console.log(err)
@@ -2492,11 +2490,12 @@ function base64_encode(file) {
             var rnd = randomName(30) + '.png';
             var foto = post.items[0].image_versions2.candidates[0].url;
             try{
-              await download(foto, './temp/' + rnd, function(){
-              const a = base64_encode('./temp/' + rnd);
+              await download(foto, './dbig/' + rnd, function(){
+              const a = base64_encode('./dbig/' + rnd);
               var base64str = 'data:image/jpeg'+";base64,"+a.toString()
               iluser.sendImage(message.from,base64str,rnd, `sukses download!\nFrom : @` + user+`${mess.iklan}`, id);
               console.log('SUCCESS | download media from INSTAGRAM');
+              limitAdd(serial)
             });
             } catch(err){
               console.log(err)
@@ -2507,6 +2506,103 @@ function base64_encode(file) {
         console.log(err)
     }
     break
+    case prefix+'igs':{
+        const disable = await getDB.cek_disable(message.from, `${prefix}igs`);
+        if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
+        if(isReg(obj)) return
+        if (isLimit(serial)) return
+          //list = ['il.userr', 'bqdianaas']
+          const username = 'botwa_testing';
+          const password = 'Anjay123';
+          ig.state.generateDevice(username);
+          await ig.simulate.preLoginFlow();
+          await ig.account.login(username, password);
+          const input = message.body.slice(5);
+          const pecah = input.split(" ");
+          const userId = await ig.user.getIdByUsername(pecah[0]);
+          const acc = await ig.user.info(userId);
+          const ray = await ig.feed.userStory(userId).request();
+          const more = ray.reel.items;
+          if (acc.is_private == true) {
+            iluser.reply(message.from,'Tidak bisa mengunduh media di akun terkunci/private account', message.id);
+            console.log( 'FAILED | because PRIVATE account INSTAGRAM');
+          }else if (pecah[1] == undefined) {
+            if (more.length > 10) {
+                iluser.reply(message.from, `Instagram Story @${pecah[0]}\nMengirim 10 cerita..`, message.id)
+              for (var i = 0; i < 10; i++) {
+                var ricek = more[i].media_type;
+                if(ricek == 2){
+                  let rnd = randomName(30) + '.mp4';
+                  var video = more[i].video_versions[0].url;
+                  await download(video, './dbig/' + rnd, function(){
+                  const a = base64_encode('./dbig/' + rnd);
+                  var base64str = 'data:video/mp4'+";base64,"+a.toString()
+                  iluser.sendFile(message.from,base64str,rnd, `${mess.iklann}`, message.id);
+                });
+                }else if (ricek == 1){
+                  let rndi = randomName(30) + '.png';
+                  var foto = more[i].image_versions2.candidates[0].url;
+                  await download(foto, './dbig/' + rndi, function(){
+                  const a = base64_encode('./dbig/' + rndi);
+                  var base64str = 'data:image/jpeg'+";base64,"+a.toString();
+                  iluser.sendImage(message.from,base64str,rndi, `${mess.iklann}`, message.id);
+                });
+                }
+              }
+              console.log( `SUCCESS | download story instagram`)
+              limitAdd(serial)
+            }else{
+                iluser.reply(message.from, `Instagram Story @${pecah[0]}`, message.id)
+              for (var i = 0; i < more.length; i++) {
+                var ricek = more[i].media_type;
+                if(ricek == 2){
+                  let rnd = randomName(30) + '.mp4';
+                  var video = more[i].video_versions[0].url;
+                  await download(video, './dbig/' + rnd, function(){
+                  const a = base64_encode('./dbig/' + rnd);
+                  var base64str = 'data:video/mp4'+";base64,"+a.toString();
+                  iluser.sendFile(message.from,base64str,rnd, `${mess.iklann}`, message.id);
+                });
+                }else if (ricek == 1){
+                  let rndi = randomName(30) + '.png';
+                  var foto = more[i].image_versions2.candidates[0].url;
+                  await download(foto, './dbig/' + rndi, function(){
+                    const a = base64_encode('./dbig/' + rndi);
+                    var base64str = 'data:image/jpeg'+";base64,"+a.toString()
+                    iluser.sendImage(message.from,base64str,rndi, `${mess.iklann}`, message.id);
+                  });
+                }
+              }
+              console.log( `SUCCESS | download story instagram`)
+              limitAdd(serial)
+            }
+          }else if (pecah[1] != undefined) {
+            let ke = pecah[1] - 1;
+            const cek_media = ray.reel.items[ke].media_type;
+            if(cek_media == 2){
+              let rnd = randomName(30) + '.mp4';
+              var video = more[ke].video_versions[0].url;
+              await download(video, './dbig/' + rnd, function(){
+                const a = base64_encode('./dbig/' + rnd);
+                var base64str = 'data:video/mp4'+";base64,"+a.toString()
+                iluser.sendFile(message.from,base64str,rnd,`Berhasil mengunduh cerita dari @${pecah[0]} ke-${pecah[1]} ${mess.iklan}`, message.id);
+                console.log( `SUCCESS | download story instagram`)
+                limitAdd(serial)
+              });
+            }else if (cek_media == 1){
+              let rndi = randomName(30) + '.png';
+              var foto = more[ke].image_versions2.candidates[0].url;
+              await download(foto, './dbig/' + rndi, function(){
+                const a = base64_encode('./dbig/' + rndi);
+                var base64str = 'data:image/jpeg'+";base64,"+a.toString()
+                iluser.sendImage(message.from,base64str,rndi, `Berhasil mengunduh cerita dari @${pecah[0]} ke-${pecah[1]}, ${mess.iklan}`, message.id);
+                console.log( `SUCCESS | download story instagram`)
+                limitAdd(serial)
+              });
+            }
+          }        
+        }
+        break
         case prefix+'tw':
         case prefix+'twt':
         case prefix+'twitter':{
@@ -2885,8 +2981,7 @@ ${mess.iklan}`, message.id).catch(() => iluser.reply(message.from, 'Error bang',
             break
         break
         case prefix+'instastory':
-        case prefix+'igstory':
-        case prefix+'its':{
+        case prefix+'igstory':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}igstory`);
                 if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
                 if (args.length === 1) return iluser.reply(message.from, `Contoh: ${prefix}igstory namauser`, message.id)
@@ -3206,6 +3301,7 @@ limitAdd(serial)
             }
         }
           break
+
         //AUDIO MENU
         case prefix+'tomp3':
         case prefix+'toaudio':{
@@ -3470,13 +3566,14 @@ limitAdd(serial)
             break
         case prefix+`vnlist`:
         case prefix+`listvn`:
-        let vn = `Daftar voice note tersimpan\n`
+        let vn = `Daftar voice note tersimpan\n\nGunakan *${prefix}v nama vn* atau ketikan langsung nama vn untuk mengakses voice note yang tersimpan\n\n`
             for (let i of vnlist) {
                 vn += `• ${i}\n`
-            }
+            }vn += `\n*NB*\nPenggunaan huruf besar dan kecil sensitif`
             await iluser.reply(message.from, vn, message.id)
             console.log(color('SUCCESS | voice note list', 'olive'))
             break
+
         //SEARCH MENU
         case prefix+'playstore':{
                 const disable = await getDB.cek_disable(message.from, `${prefix}playstore`);
@@ -3508,6 +3605,8 @@ limitAdd(serial)
             if (isLimit(serial)) return 
             if (args.length === 1) return iluser.reply(message.from, `Contoh : *${prefix}infoapk com.facebook.katana`, id)
             try {
+                const dataplai = await axios.get(`https://api.jastinch.xyz/googleplay?appid=${keywotp}`)
+                const dataplay = {title, description, installs, minInstalls, maxInstalls,score,scoreText,ratings,reviews,price,free,currency,priceText,offersIAP,IAPRange,size,androidVersion,androidVersionText,developer,developerId,developerEmail,developerWebsite,privacyPolicy,developerInternalID,genre,genreID,contentRating,adsSupported,updated,version,editorsChoice,appId} = dataplai.data
                 await iluser.reply(message.from, `NIH Tod
 
 *Nama:* ${title}
@@ -5919,6 +6018,8 @@ ${desc}`)
             if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
             if(isReg(obj)) return
             if (isLimit(serial)) return
+            const waifu = await axios.get(`https://api.vhtear.com/randomwibu&apikey=${vhtearkey}`)
+            const su = {nama, deskripsi, foto, sumber} = waifu.data.result
             await iluser.sendFileFromUrl(message.from, foto, 'Waifu.jpg', `• Name : ${nama}\n• Description : ${deskripsi}\n\n• Source : ${sumber} ${mess.iklan}`, message.id)
             limitAdd(serial)
             }
@@ -7146,27 +7247,36 @@ Rilis : ${metadata.metadata.music[0].release_date}`, id)
            let qrcodes = body.slice(8)
            await iluser.sendFileFromUrl(message.from, `https://api.qrserver.com/v1/create-qr-code/?size=500x500&data=${qrcodes}`, 'gambar.png', `Qrcode X iluser_BOT ${mess.iklan}`, message.id)
            break
+        case prefix+'readqr':
         case prefix+'qrread':{
-                if(isReg(obj)) return
-                if (isLimit(serial)) return 
-                if (isMedia && type === 'image') {
-                const mediaData = await decryptMedia(message, uaOverride)
-                const getUrla = await uploadImages(mediaData, false)
-                const cloudy = await axios.get(`http://docs-jojo.herokuapp.com/api/qr_read?image_url=${getUrla}`)
-                //const cloudyy = cloudy.data
-                limitAdd(serial)
-                iluser.reply(from, `Qr Reader\n\nText: ${cloudy.data.result.raw_text}\nBytes: ${cloudy.data.result.raw_bytes} ${mess.iklan}`, id)
-                }  else if (quotedMsg && quotedMsg.type == 'image') {
-                const mediaData = await decryptMedia(message, uaOverride)
-                const getUrla = await uploadImages(mediaData, false)
-                const cloudy = await axios.get(`http://docs-jojo.herokuapp.com/api/qr_read?image_url=${getUrla}`)
-                //const cloudyy = cloudy.data
-                limitAdd(serial)
-                iluser.reply(from, `Qr Reader\n\nText: ${cloudy.data.result.raw_text}\nBytes: ${cloudy.data.result.raw_bytes} ${mess.iklan}`, id)
-                } else {
-                await iluser.reply(from, 'Wrong Format!', id)
-                }
-            }
+            if (isMedia && type === 'image' || isQuotedImage) {
+                const qrCode = isQuotedImage ? quotedMsg : message
+                const downQr = await decryptMedia(qrCode, uaOverride)
+				const upQrCode = await uploadImages(downQr, false)
+				const getQrText = await axios.get(`http://api.qrserver.com/v1/read-qr-code/?fileurl=${upQrCode}`)
+				const theQRText = getQrText.data[0].symbol[0].data
+				if (theQRText == null) return await iluser.reply(from, 'Not a QR code.', id)
+				await iluser.reply(from, `${theQRText}`, id).catch(async () => { await iluser.reply(from, `Failed`, id) })
+            } else return await iluser.reply(from, `Gambar qrnya mana tod?`, id)
+        }
+            break
+        case prefix+'apk':
+        try {
+            if(isReg(obj)) return
+            if (isLimit(serial)) return 
+            if (args.length == 1) return await iluser.reply(from, `Masukkan nama aplikasi`, id)
+			const aptoide = await axios.get(`http://ws75.aptoide.com/api/7/apps/search?query=${encodeURIComponent(body.slice(5))}&trusted=true`)
+			if (aptoide.data.datalist.total == 0) return iluser.reply(from, `Data tidak ditemukan`, id)
+			const getApk = aptoide.data.datalist.list[0]
+			const sizeApk = (getApk.size / 1048576).toFixed(1)+' MB'
+            if (Number(sizeApk.split(' MB')[0]) > 30.00) return iluser.sendFileFromUrl(message.from, getApk.graphic, `thumb.jpg`, `\nSizenya terlalu gede sayang, dd gakuat :(\n\nunduh manual melalui link di bawah ini\n${getApk.file.path} [ *${sizeApk}* ]\n\n*Judul* : ${getApk.name} ${mess.iklan}`, message.id)
+			await iluser.sendFileFromUrl(from, `${getApk.graphic}`, 'iluser.png', `• *Title* : ${getApk.name}\n• *Package* : ${getApk.package}\n• *Weight* : ${sizeApk}\n• *Version* : ${getApk.file.vername}\n\n_Uploading . . ._`, id)
+            iluser.sendFileFromUrl(from, getApk.file.path, `iluserBOT_${getApk.name}.apk`, '', id)
+            limitAdd(serial)
+        } catch (err){
+            iluser.reply(from, `Aplikasi tidak ditemukan.`, message.id)
+            iluser.sendText(ownerNumber, `Apk downloader: ${err}`)
+        }
             break
         case prefix+'neko':
         case prefix+'kucing':
@@ -7176,7 +7286,7 @@ Rilis : ${metadata.metadata.music[0].release_date}`, id)
             limitAdd(serial)
             q2 = Math.floor(Math.random() * 900) + 300;
             q3 = Math.floor(Math.random() * 900) + 300;
-            iluser.sendFileFromUrl(message.from, 'http://placekitten.com/'+q3+'/'+q2, 'neko.png','Neko ')
+            iluser.sendFileFromUrl(message.from, 'http://placekitten.com/'+q3+'/'+q2, 'neko.png','Neko ', id)
             break
         case prefix+'pokemon':
             if(isReg(obj)) return
@@ -9722,7 +9832,7 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
                             browser.close();
                             console.log(color('FAILED | salju maker', 'red'))
                             iluser.sendText(ownerNumber, `Error salju maker:\n${err}`)
-                            iluser.reply(message.from, 'Error', message.id)
+                            iluser.reply(message.from, 'Error\n\nPastikan format penulisan benar!', message.id)
                         }))
             })();
             } catch (error) {
@@ -9771,7 +9881,7 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
                             browser.close();
                             console.log(color('FAILED | bioskop text', 'red'))
                             iluser.sendText(ownerNumber, `Error bioskop text:\n${err}`)
-                            iluser.reply(message.from, 'Error', message.id)
+                            iluser.reply(message.from, 'Error\n\nPastikan format penulisan benar!', message.id)
                         }))
             })();
             } catch (error) {
@@ -10004,7 +10114,7 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
                             browser.close();
                             console.log(color('FAILED | kayu maker', 'red'))
                             iluser.sendText(ownerNumber, `Error kayu maker:\n${err}`)
-                            iluser.reply(message.from, 'Error', message.id)
+                            iluser.reply(message.from, 'Error\n\nPastikan format penulisan benar!', message.id)
                         }))
             })();
             } catch (error) {
@@ -10099,7 +10209,7 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
                             browser.close();
                             console.log(color('FAILED | neon-sign maker', 'red'))
                             iluser.sendText(ownerNumber, `Error neon-sign maker:\n${err}`)
-                            iluser.reply(message.from, 'Error', message.id)
+                            iluser.reply(message.from, 'Error\n\nPastikan format penulisan benar!', message.id)
                         }))
             })();
             } catch (error) {
@@ -10578,6 +10688,49 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
                 }
             }
             break
+        case prefix+'blur':
+			try {
+                const disable = await getDB.cek_disable(message.from, `${prefix}blur`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id) 
+                if(isReg(obj)) return
+                    if (isLimit(serial)) return
+				if (isMedia && type === 'image' || isQuotedImage) {
+					const shitBlurt = isQuotedImage ? quotedMsg : message
+					const getshitPic = await decryptMedia(shitBlurt, uaOverride)
+					var theBlurpic = await upload(getshitPic, false)
+				} else { var theBlurpic = quotedMsg ? await iluser.getProfilePicFromServer(quotedMsgObj.sender.id) : (mentionedJidList.length !== 0 ? await iluser.getProfilePicFromServer(mentionedJidList[0]) : await iluser.getProfilePicFromServer(user)) }
+				if (theBlurpic === undefined) theBlurpic = errorImg
+				canvas.Canvas.blur(theBlurpic).then(async (buffer) => { 
+                    await iluser.sendFile(from, `data:image/png;base64,${buffer.toString('base64')}`, `blur.png`, '💡', id)
+                    limitAdd(serial)
+                })
+			} catch (error) {
+				await iluser.reply(from, `Gagal!\n\nPeriksa format penulisan dengan benar`, id)
+				console.log(error)
+			}
+			break
+			
+			
+		case prefix+'rip':
+			try {
+                const disable = await getDB.cek_disable(message.from, `${prefix}rip`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id) 
+                if(isReg(obj)) return
+				if (isMedia && type === 'image' || isQuotedImage) {
+					const ARipt = isQuotedImage ? quotedMsg : message
+					const getRipPic = await decryptMedia(ARipt, uaOverride)
+					var theRippic = await upload(getRipPic, false)
+				} else { var theRippic = quotedMsg ? await iluser.getProfilePicFromServer(quotedMsgObj.sender.id) : (mentionedJidList.length !== 0 ? await iluser.getProfilePicFromServer(mentionedJidList[0]) : await iluser.getProfilePicFromServer(user)) }
+				if (theRippic === undefined) theRippic = errorImg
+				canvas.Canvas.rip(theRippic).then(async (buffer) => { 
+                    await iluser.sendFile(from, `data:image/png;base64,${buffer.toString('base64')}`, `rip.png`, '☠️', id)
+                    limitAdd(serial)
+                })
+			} catch (error) {
+				await iluser.reply(from, `Gagal!\n\nPeriksa format penulisan dengan benar`, id)
+				console.log(error)
+			}
+			break
         case prefix+'shutdown':
                 if (isOwner){
                 await iluser.sendText(message.from, '[ WARN ] Process to shutdown...')
