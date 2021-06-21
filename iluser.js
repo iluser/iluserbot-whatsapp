@@ -104,6 +104,7 @@ let switch_command = JSON.parse(fs.readFileSync('./command.json'))
 const process = require('process');
 
 //NEW MODULE
+const capture = require('capture-phantomjs')
 const facebookTools = require("facebook-tools");
 
 // PROTECT
@@ -3518,14 +3519,6 @@ limitAdd(serial)
             if (!isOwner && !isPremium && !isPilot) return await iluser.reply(message.from, mess.nopremium, message.id)
             if (args.length === 1) return iluser.reply(message.from, `Namanya mana tolol?`)
             let nmfil = body.slice(7)
-            var ceknya = nmfil
-            var obj = vnlist.some((val) => {
-            return val.id === ceknya
-            })
-            if (obj === true){
-            return iluser.reply(message.from, 'Ganti nama lain tod. sudah ada untuk nama ini', message.id) // BAKAL RESPON JIKA NO UDAH ADA
-            } else {
-            //if(cek) return iluser.reply(message.from, `Ganti nama lain tod. sudah ada untuk nama ini`, message.id) //if number already exists on database
             if (isQuotedAudio || isQuotedVoice){
                 const mediaData = await decryptMedia(quotedMsg, uaOverride)
                 const filename = `./media/audio/${nmfil}.mp3`
@@ -3540,7 +3533,7 @@ limitAdd(serial)
                 }else{
                     await iluser.sendTextWithMentions(ownerNumber, `*[SETVN NOTICE]*\n\n*WAKTU:* ${time}\nUSER: @${sender.id.match(/\d+/g)}\n\n${nmfil}`)
                     iluser.sendText(ownerNumber, `${nmfil}`)
-                }
+                } 
             }else if(isMedia && type === 'audio'){
                 const mediaData = await decryptMedia(message, uaOverride)
                 const filename = `./media/audio/${nmfil}.mp3`
@@ -3560,9 +3553,20 @@ limitAdd(serial)
                 await iluser.reply(message.from, `Error! Silahkan coba kembali...`, message.id)
                 console.log(color('FAILED | saving voice note', 'red'))
             }
+                    
         }
-            
-        }
+        break
+        case prefix+'delvn':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}delvn`);
+            if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
+            if (!isOwner && !isPremium && !isPilot) return await iluser.reply(message.from, mess.nopremium, message.id)
+                if (args.length === 1) return iluser.reply(from, 'Mau apa tol?', id)
+                let svstc = `${body.slice(7)}`
+                vnlist.splice(svstc, 1)
+                fs.unlinkSync(`./media/audio/${svstc}.mp3`)
+                fs.writeFileSync('./lib/database/vn.json', JSON.stringify(vnlist))
+                await iluser.reply(from, `Sukses menghapus voice note *${svstc}*`, id)
+            }
             break
         case prefix+`vnlist`:
         case prefix+`listvn`:
@@ -4704,11 +4708,11 @@ ${zodiak.keuangan} ${mess.iklan}`, message.id);
                     if (!isOwner) return 
                     if (mentionedJidList.length == 1) {
                         if (mentionedJidList[1] === botNumber) return await iluser.reply(message.from, `Format salah bang!`, message.id)
-                        _premium.splice(premium.getPremiumPosition(mentionedJidList[1], _premium), 1)
+                        _premium.splice(premium.getPremiumPosition(mentionedJidList[0], _premium), 1)
                         fs.writeFileSync('./lib/database/premium.json', JSON.stringify(_premium))
-                        await iluser.reply(message.from, `Sukses menghapus user premium`, message.id)
+                        await iluser.sendTextWithMentions(message.from, `@${mentionedJidList[0]} deleted from database premium!`, message.id)
                     } else {
-                        _premium.splice(premium.getPremiumPosition(args[1] + '@c.us', _premium), 1)
+                        _premium.splice(premium.getPremiumPosition(args[0] + '@c.us', _premium), 1)
                         fs.writeFileSync('./lib/database/premium.json', JSON.stringify(_premium))
                         await iluser.reply(message.from, `Sukses menghapus user premium`, message.id)
                     }
@@ -6362,6 +6366,21 @@ ${desc}`)
             iluser.sendFileFromUrl(message.from, `https://api.vhtear.com/ssweb?link=${ssphone}&type=phone&apikey=${vhtearkey}`, 'ssphone.jpg', `${mess.iklann}`, message.id)
             }
             break
+        case prefix+'ss':{
+            const disable = await getDB.cek_disable(message.from, `${prefix}ss`);
+                if (disable != 0) return iluser.reply(message.from, mess.nonaktif, message.id)
+            if(isReg(obj)) return
+            if (isLimit(serial)) return
+            capture({
+                url: `${body.slice(4)}`,
+                width: 1024,
+                height: 768
+              }).then(screenshot => {
+                fs.writeFileSync(`./example.png`, screenshot)
+                console.log('open example.png')
+              })
+        }
+        break
         case prefix+'ss':{
             if(isReg(obj)) return
             if (isLimit(serial)) return
@@ -10748,8 +10767,11 @@ Subscribe t.me/iluser_BOT for more information about this bot`)
             }
             break
 
-        case prefix+'>':
+        case prefix+'refresh':
             if (isOwner){
+                await await iluser.sendText(message.from, 'Refreshing system...')
+                await iluser.refresh()
+                await await iluser.sendText(message.from, 'Refreshing success')
         }
             break
             default:
