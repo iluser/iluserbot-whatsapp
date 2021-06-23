@@ -1,8 +1,9 @@
-const { create, ev, Client } = require('@open-wa/wa-automate')
+const { create, Client } = require('@open-wa/wa-automate')
 var getDB = require('./db');
 const cron = require('node-cron')
 const color = require('./lib/color')
 const fs = require('fs')
+const ilwan = require('./iluser.js')
 const headless = true
 const figlet = require('figlet')
 const lolcatjs = require('lolcatjs')
@@ -52,23 +53,23 @@ const start = async (iluser = new Client()) => {
         iluser.sendText('6283142933894@c.us','BOT started!!!');
         //iluser.onAnyMessage((fn) => messageLog(fn.fromMe, fn.type))
         // Force it to keep the current session
-        iluser.onStateChanged((state) => {
+        iluser.onStateChanged(async (state) => {
             console.log('[ILUSER STATE]', state)
            // iluser.sendText('6283142933894@c.us', 'BOT STATE '+ state)
-            if (state === 'CONFLICT' || state === 'UNLAUNCHED') iluser.forceRefocus()
+            if (state === 'UNPAIRED' || state === 'CONFLICT' || state === 'UNLAUNCHED') await iluser.forceRefocus()
         })
-        // listening on message
-        iluser.onMessage((async (message) => {
 
-        iluser.getAmountOfLoadedMessages()
-            .then((msg) => {
-                if (msg >= 300) {
-                    console.log('[ILUSER STATE]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
-                    iluser.cutMsgCache()
+        // listening on message
+        iluser.onMessage(async (message) => {
+
+        await iluser.getAmountOfLoadedMessages().then(async (msg) => {
+                if (msg >= 9000) {
+                    console.log('[CLEAN CACHE]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
+                    await iluser.cutMsgCache()
                 }
             })
-        require('./iluser.js')(iluser, message)
-    }))
+            require('./iluser.js')(iluser, message)
+    })
 
     iluser.onGlobalParticipantsChanged(async(change) => {
         console.log(change)
@@ -130,7 +131,7 @@ PAYPAL : https://www.paypal.me/ilwanxyz`)
                     })
                 }else{
                     if(chat.groupMetadata.participants.length < memberLimit){
-                        iluser.sendText(chat.id, `Maaf, BOT keluar jika member group tidak melebihi ${memberLimit} orang`).then(async() =>{ iluser.leaveGroup(chat.id)})
+                        await iluser.sendText(chat.id, `Maaf, BOT keluar jika member group tidak melebihi ${memberLimit} orang`).then(async() =>{ await iluser.leaveGroup(chat.id)})
                         console.log(`ADDED TO GROUP | Member kurang dari [ ${memberLimit} ] `)  
                     }else{
                         if(!chat.isReadOnly) iluser.sendText(chat.id, `*INFO*
@@ -204,6 +205,7 @@ let options = {
 	blockCrashLogs: true,
   bypassCSP: true,
   cacheEnabled: false,
+  disableSpins: true,
   //licenseKey: '76E8C5E5-CEE3478F-9F435776-BE83B5EE',
   //executablePath: 'C:\\Program Files\\BraveSoftware\\Brave-Browser\\Application\\brave.exe',
   //stickerServerEndpoint: false,
