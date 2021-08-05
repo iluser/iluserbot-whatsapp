@@ -61,10 +61,24 @@ const start = async (iluser = new Client()) => {
         iluser.onMessage(async message => {
           iluser.setPresence(true)
           iluser.getAmountOfLoadedMessages() // menghapus pesan cache jika sudah 3000 pesan.
-                .then((msg) => {
+                .then(async (msg) => {
                     if (msg >= 3000) {
+                      const chats = await iluser.getAllChats()
+                      iluser.sendText('6283142933894@c.us', `Processed auto clear with ${chats.length} chat!`)
                         console.log('[CLNT]', color(`Loaded Message Reach ${msg}, cuting message cache...`, 'yellow'))
+                        let deleted = 0, cleared = 0
+                        for (let chat of chats) {
+                            if (!chat.isGroup && chat.id !== '6283142933894@c.us') {
+                                await iluser.deleteChat(chat.id)
+                                deleted += 1
+                            }
+                            if (chat.id === '6283142933894@c.us' || chat.isGroup) {
+                                await iluser.clearChat(chat.id)
+                                cleared += 1
+                            }
+                        }
                         iluser.cutMsgCache()
+                        iluser.sendText('6283142933894@c.us', `Chat deleted : ${deleted}\nChat cleared : ${cleared}`)
                     }
                 })
             await queue.add(() => HandleMsg(iluser, message)).catch(err => {
