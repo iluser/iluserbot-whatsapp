@@ -59,7 +59,7 @@
     "human-readable": "^0.2.1",
     "image-size": "^0.9.1",
     "image-to-base64": "^2.1.1",
-    "image-to-pdf": "^1.0.0",
+    "image-to-pdf": "^2.0.0",
     "instagram-id-to-url-segment": "0.0.0",
     "instagram-private-api": "^1.45.1",
     "is-porn": "^0.9.0",
